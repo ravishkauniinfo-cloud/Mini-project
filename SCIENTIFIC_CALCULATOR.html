@@ -1,0 +1,122 @@
+<div class="calc-wrapper" style="max-width: 800px;">
+            <div class="calc-header">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Scientific</h2>
+                <p>Advanced functions natively parsed by Math.js.</p>
+            </div>
+            
+            <div class="glass" style="border-radius: 24px; overflow: hidden;">
+                <div class="sci-display-area">
+                    <div id="sci-history" style="color: var(--text-muted); font-size: 1.2rem; min-height: 1.5rem; margin-bottom: 5px;"></div>
+                    <div id="sci-input" style="font-size: 3.5rem; font-weight: 300; color: var(--text-main); font-family: 'Times New Roman', serif; overflow-x: auto; white-space: nowrap; max-width: 100%;">0<span style="border-right: 2px solid var(--primary); animation: blink 1s step-end infinite;"></span></div>
+                </div>
+                
+                <div class="vk-container">
+                    <div class="vk-toolbar">
+                        <div class="vk-tabs">
+                            <div class="vk-tab active" onclick="sciApp.switchTab('main')">main</div>
+                            <div class="vk-tab" onclick="sciApp.switchTab('abc')">abc</div>
+                            <div class="vk-tab" onclick="sciApp.switchTab('func')">func</div>
+                        </div>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div class="vk-toggles">
+                                <div class="vk-toggle active" id="sci-rad" onclick="sciApp.setAngle('rad')">RAD</div>
+                                <div class="vk-toggle" id="sci-deg" onclick="sciApp.setAngle('deg')">DEG</div>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" onclick="sciApp.clearAll()">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- MAIN GRID -->
+                    <div id="vk-main" class="vk-grid main">
+                        <button class="vk-btn" onclick="sciApp.type('^2')">a²</button>
+                        <button class="vk-btn" onclick="sciApp.type('^')">a^b</button>
+                        <button class="vk-btn" onclick="sciApp.type('abs(')">|a|</button>
+                        <button class="vk-btn num" onclick="sciApp.type('7')">7</button>
+                        <button class="vk-btn num" onclick="sciApp.type('8')">8</button>
+                        <button class="vk-btn num" onclick="sciApp.type('9')">9</button>
+                        <button class="vk-btn" onclick="sciApp.type('/')">÷</button>
+                        <button class="vk-btn" onclick="sciApp.type('%')">%</button>
+                        <button class="vk-btn" onclick="sciApp.type('/')">a/b</button>
+
+                        <button class="vk-btn" onclick="sciApp.type('sqrt(')">√</button>
+                        <button class="vk-btn" onclick="sciApp.type('nthRoot(')">ⁿ√</button>
+                        <button class="vk-btn" onclick="sciApp.type('pi')">π</button>
+                        <button class="vk-btn num" onclick="sciApp.type('4')">4</button>
+                        <button class="vk-btn num" onclick="sciApp.type('5')">5</button>
+                        <button class="vk-btn num" onclick="sciApp.type('6')">6</button>
+                        <button class="vk-btn" onclick="sciApp.type('*')">×</button>
+                        <button class="vk-btn action"><i class="fa-solid fa-arrow-left"></i></button>
+                        <button class="vk-btn action"><i class="fa-solid fa-arrow-right"></i></button>
+
+                        <button class="vk-btn" onclick="sciApp.type('sin(')">sin</button>
+                        <button class="vk-btn" onclick="sciApp.type('cos(')">cos</button>
+                        <button class="vk-btn" onclick="sciApp.type('tan(')">tan</button>
+                        <button class="vk-btn num" onclick="sciApp.type('1')">1</button>
+                        <button class="vk-btn num" onclick="sciApp.type('2')">2</button>
+                        <button class="vk-btn num" onclick="sciApp.type('3')">3</button>
+                        <button class="vk-btn" onclick="sciApp.type('-')">−</button>
+                        <button class="vk-btn action" style="grid-column: span 2;" onclick="sciApp.backspace()"><i class="fa-solid fa-delete-left"></i></button>
+
+                        <button class="vk-btn" onclick="sciApp.type('(')">(</button>
+                        <button class="vk-btn" onclick="sciApp.type(')')">)</button>
+                        <button class="vk-btn" onclick="sciApp.type(',')">,</button>
+                        <button class="vk-btn num" onclick="sciApp.type('0')">0</button>
+                        <button class="vk-btn num" onclick="sciApp.type('.')">.</button>
+                        <button class="vk-btn num" onclick="sciApp.type('ans')">ans</button>
+                        <button class="vk-btn" onclick="sciApp.type('+')">+</button>
+                        <button class="vk-btn enter" style="grid-column: span 2;" onclick="sciApp.compute()"><i class="fa-solid fa-arrow-turn-down fa-rotate-90"></i></button>
+                    </div>
+
+                    <!-- FUNC GRID -->
+                    <div id="vk-func" class="vk-grid func" style="display: none;">
+                        <button class="vk-btn" onclick="sciApp.type('sin(')">sin</button>
+                        <button class="vk-btn" onclick="sciApp.type('cos(')">cos</button>
+                        <button class="vk-btn" onclick="sciApp.type('tan(')">tan</button>
+                        <button class="vk-btn" onclick="sciApp.type('^')">a^b</button>
+                        <button class="vk-btn" onclick="sciApp.type('sqrt(')">√</button>
+                        <button class="vk-btn" onclick="sciApp.type('nthRoot(')">ⁿ√</button>
+                        
+                        <button class="vk-btn" onclick="sciApp.type('asin(')">sin⁻¹</button>
+                        <button class="vk-btn" onclick="sciApp.type('acos(')">cos⁻¹</button>
+                        <button class="vk-btn" onclick="sciApp.type('atan(')">tan⁻¹</button>
+                        <button class="vk-btn" onclick="sciApp.type('exp(')">e^x</button>
+                        <button class="vk-btn" onclick="sciApp.type('abs(')">abs</button>
+                        <button class="vk-btn" onclick="sciApp.type('round(')">round</button>
+                        
+                        <button class="vk-btn" onclick="sciApp.type('mean(')">mean</button>
+                        <button class="vk-btn" onclick="sciApp.type('std(')">stdev</button>
+                        <button class="vk-btn" onclick="sciApp.type('std(')">stdevp</button>
+                        <button class="vk-btn" onclick="sciApp.type('log(')">ln</button>
+                        <button class="vk-btn" onclick="sciApp.type('log10(')">log</button>
+                        <button class="vk-btn action" onclick="sciApp.backspace()"><i class="fa-solid fa-delete-left"></i></button>
+
+                        <button class="vk-btn" onclick="sciApp.type('permutations(')">nPr</button>
+                        <button class="vk-btn" onclick="sciApp.type('combinations(')">nCr</button>
+                        <button class="vk-btn" onclick="sciApp.type('!')">!</button>
+                        <button class="vk-btn" onclick="sciApp.type('e')">e</button>
+                        <button class="vk-btn" onclick="sciApp.type('pi')">π</button>
+                        <button class="vk-btn enter" onclick="sciApp.compute()"><i class="fa-solid fa-arrow-turn-down fa-rotate-90"></i></button>
+                    </div>
+
+                    <!-- ABC GRID -->
+                    <div id="vk-abc" style="display: none; padding: 10px 0; text-align: center;">
+                        <div class="vk-row">
+                            <button class="vk-btn" onclick="sciApp.type('q')">q</button><button class="vk-btn" onclick="sciApp.type('w')">w</button><button class="vk-btn" onclick="sciApp.type('e')">e</button><button class="vk-btn" onclick="sciApp.type('r')">r</button><button class="vk-btn" onclick="sciApp.type('t')">t</button><button class="vk-btn" onclick="sciApp.type('y')">y</button><button class="vk-btn" onclick="sciApp.type('u')">u</button><button class="vk-btn" onclick="sciApp.type('i')">i</button><button class="vk-btn" onclick="sciApp.type('o')">o</button><button class="vk-btn" onclick="sciApp.type('p')">p</button>
+                        </div>
+                        <div class="vk-row" style="width: 90%; margin: 0 auto 8px;">
+                            <button class="vk-btn" onclick="sciApp.type('a')">a</button><button class="vk-btn" onclick="sciApp.type('s')">s</button><button class="vk-btn" onclick="sciApp.type('d')">d</button><button class="vk-btn" onclick="sciApp.type('f')">f</button><button class="vk-btn" onclick="sciApp.type('g')">g</button><button class="vk-btn" onclick="sciApp.type('h')">h</button><button class="vk-btn" onclick="sciApp.type('j')">j</button><button class="vk-btn" onclick="sciApp.type('k')">k</button><button class="vk-btn" onclick="sciApp.type('l')">l</button>
+                        </div>
+                        <div class="vk-row">
+                            <button class="vk-btn action" style="max-width: 60px;">⇧</button>
+                            <button class="vk-btn" onclick="sciApp.type('z')">z</button><button class="vk-btn" onclick="sciApp.type('x')">x</button><button class="vk-btn" onclick="sciApp.type('c')">c</button><button class="vk-btn" onclick="sciApp.type('v')">v</button><button class="vk-btn" onclick="sciApp.type('b')">b</button><button class="vk-btn" onclick="sciApp.type('n')">n</button><button class="vk-btn" onclick="sciApp.type('m')">m</button>
+                            <button class="vk-btn action" style="max-width: 60px;" onclick="sciApp.backspace()"><i class="fa-solid fa-delete-left"></i></button>
+                        </div>
+                        <div class="vk-row" style="margin-top: 15px;">
+                            <button class="vk-btn action" style="max-width: 80px;" onclick="sciApp.switchTab('main')">123</button>
+                            <button class="vk-btn" style="max-width: 300px;" onclick="sciApp.type(' ')">space</button>
+                            <button class="vk-btn enter" style="max-width: 80px;" onclick="sciApp.compute()">↵</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
