@@ -88,19 +88,19 @@
         </section>
         
         <section class="tools-grid">
-           <a href="pages/graph.html" class="tool-card glass">
+           <a href="GRAPHING_CALCULATOR.html" class="tool-card glass">
                 <i class="fa-solid fa-chart-line tool-icon"></i>
                 <h3>Graphing</h3>
                 <p>Visualize equations and plot functions interactively.</p>
             </a>
 
-            <a href="pages/scientific.html" class="tool-card glass">
+            <a href="SCIENTIFIC_CALCULATOR.html" class="tool-card glass">
                 <i class="fa-solid fa-flask tool-icon"></i>
                 <h3>Scientific</h3>
                 <p>Advanced functions, trigonometry, and statistics.</p>
             </a>
 
-            <a href="pages/ai-solver.html" class="tool-card glass" style="border: 1px solid var(--secondary);">
+            <a href="AI.html" class="tool-card glass" style="border: 1px solid var(--secondary);">
                 <i class="fa-solid fa-wand-magic-sparkles tool-icon"></i>
                 <h3>✨ AI Solver</h3>
                 <p>Explain and solve word problems step-by-step.</p>
@@ -112,167 +112,19 @@
                 <p>Beautiful liquid glass standard arithmetic.</p>
             </a>
           
-            <a href="pages/matrix.html" class="tool-card glass">
+            <a href="MATRIX_CALCULATOR.html" class="tool-card glass">
                 <i class="fa-solid fa-table-cells tool-icon"></i>
                 <h3>Matrix</h3>
                 <p>Solve linear equations and compute determinants.</p>
             </a>
 
-            <a href="pages/calculus.html" class="tool-card glass">
+            <a href="CALCULUS_CALCULATOR.html" class="tool-card glass">
                 <i class="fa-solid fa-integral tool-icon"></i>
                 <h3>Calculus</h3>
                 <p>Compute derivatives and definite integrals natively.</p>
             </a>
 
         </section>
-    </main>
-
-    <!-- 4. INTERACTIVE GRAPHING CALCULATOR -->
-    <main class="page" id="calc-graph">
-        <div class="calc-wrapper" style="max-width: 1200px; width: 100%;">
-            <div class="calc-header">
-                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Graphing</h2>
-                <p>Plot multiple mathematical functions interactively natively on Plotly canvas.</p>
-            </div>
-            
-            <div class="graphing-layout glass">
-                <div class="graphing-sidebar">
-                    <div style="padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="margin: 0; font-size: 1.2rem;">Expressions</h3>
-                        <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="graphApp.addEquation()">+ Add</button>
-                    </div>
-                    <div id="equation-list" class="graph-eq-list">
-                        <!-- dynamic equations load here -->
-                    </div>
-                    <div style="padding: 15px; border-top: 1px solid var(--glass-border);">
-                        <button class="btn ai-btn" style="width: 100%; margin-top: 0; padding: 0.8rem;" onclick="graphApp.analyzeGraph()">✨ Analyze Graph with AI</button>
-                        <div id="ai-graph-analysis" class="ai-response-box glass" style="margin-top: 10px; font-size: 0.9rem;"></div>
-                    </div>
-                </div>
-                <div class="graphing-canvas-area" id="plotly-graph"></div>
-            </div>
-        </div>
-    </main>
-
-    <!-- 5. MATRIX CALCULATOR (CLEAN, SOLID DESMOS STYLE) -->
-    <main class="page" id="calc-matrix">
-        <div class="calc-wrapper" style="max-width: 800px;">
-            <div class="calc-header">
-                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Matrix</h2>
-                <p>Define matrices and evaluate expressions natively.</p>
-            </div>
-            
-            <div class="matrix-ui-container">
-                <div class="matrix-display-area" id="matrix-display-area"></div>
-                <div class="matrix-toolbar">
-                    <button class="btn" style="background: var(--gradient); color: white; border-radius: 6px; padding: 0.6rem 1.2rem;" onclick="matrixApp.newMatrix()">New Matrix</button>
-                    <div style="display: flex; gap: 20px; align-items: center; color: var(--text-muted); font-size: 1.2rem;">
-                        <button class="btn" style="background: var(--gradient); color: white; border-radius: 6px; padding: 0.4rem 0.8rem; font-size: 0.9rem;" onclick="matrixApp.analyzeMatrix()">✨ Explain</button>
-                        <i class="fa-solid fa-rotate-left" style="cursor: pointer;" title="Undo"></i>
-                        <span style="cursor: pointer; font-size: 1rem; font-weight: 500;" onclick="matrixApp.clearAll()">clear all</span>
-                    </div>
-                </div>
-                <div id="ai-matrix-analysis" class="ai-response-box" style="margin: 15px; font-size: 0.95rem; border: 1px solid var(--matrix-border);"></div>
-                <div class="matrix-panels">
-                    <div id="matrix-left-panel" style="flex: 1; display: flex;"></div>
-                    <div class="matrix-keypad right">
-                        <!-- Row 1 -->
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('7')">7</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('8')">8</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('9')">9</button>
-                        <button class="mk-btn mk-white" onclick="matrixApp.type('/')">÷</button>
-                        <button class="mk-btn mk-white" onclick="matrixApp.type('(')">(</button>
-                        <button class="mk-btn mk-white" onclick="matrixApp.type(')')">)</button>
-
-                        <!-- Row 2 -->
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('4')">4</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('5')">5</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('6')">6</button>
-                        <button class="mk-btn mk-white" onclick="matrixApp.type('*')">×</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.moveCursor('left')">←</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.moveCursor('right')">→</button>
-
-                        <!-- Row 3 -->
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('1')">1</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('2')">2</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('3')">3</button>
-                        <button class="mk-btn mk-white" onclick="matrixApp.type('+')">+</button>
-                        <button class="mk-btn mk-dark-grey" style="grid-column: span 2;" onclick="matrixApp.backspace()"><i class="fa-solid fa-delete-left"></i></button>
-
-                        <!-- Row 4 -->
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('0')">0</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('.')">.</button>
-                        <button class="mk-btn mk-grey" onclick="matrixApp.type('sqrt(')">√</button>
-                        <button class="mk-btn mk-white" onclick="matrixApp.type('-')">−</button>
-                        <button class="mk-btn mk-enter" style="grid-column: span 2;" onclick="matrixApp.enter()"><i class="fa-solid fa-arrow-turn-down fa-rotate-90"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- 6. CALCULUS CALCULATOR -->
-    <main class="page" id="calc-calculus">
-        <div class="calc-wrapper" style="max-width: 900px;">
-            <div class="calc-header">
-                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Calculus</h2>
-                <p>Differentiate and integrate complex mathematical functions.</p>
-            </div>
-            
-            <div class="glass" style="border-radius: 24px; padding: 2.5rem;">
-                <div class="calc-tabs">
-                    <button class="calc-tab-btn active" onclick="switchCalcTab(event, 'diff')">Differentiation</button>
-                    <button class="calc-tab-btn" onclick="switchCalcTab(event, 'int')">Integration</button>
-                </div>
-                <div id="tab-diff" class="calc-tab-content active">
-                    <div class="math-input-group">
-                        <label>Enter Function f(x):</label>
-                        <input type="text" id="diff-input" value="x^2 + 3*x + 1">
-                    </div>
-                    <button class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border-radius: 12px; margin-top: 10px;" onclick="calculateDerivative()">Find Derivative</button>
-                    <div id="diff-result" class="result-box glass"><span style="color: var(--text-muted)">Result will appear here.</span></div>
-                    <button class="ai-btn" id="btn-explain-diff" style="display: none;" onclick="explainCalculusSteps('diff')">✨ Explain Steps with AI</button>
-                    <div id="ai-diff-explanation" class="ai-response-box glass"></div>
-                </div>
-                <div id="tab-int" class="calc-tab-content">
-                    <div class="math-input-group">
-                        <label>Enter Function f(x):</label>
-                        <input type="text" id="int-input" value="2*x + cos(x)">
-                    </div>
-                    <div class="int-options" style="display: flex; gap: 20px; margin: 15px 0;">
-                        <label style="cursor: pointer; font-weight: 500;"><input type="radio" name="int-type" id="int-type-indef" checked onchange="toggleIntType()"> Indefinite</label>
-                        <label style="cursor: pointer; font-weight: 500;"><input type="radio" name="int-type" id="int-type-def" onchange="toggleIntType()"> Definite</label>
-                    </div>
-                    <div id="int-bounds-container" class="int-bounds math-input-group" style="display: none; flex-direction: row; gap: 15px;">
-                        <input type="text" id="int-a" value="0" placeholder="Lower (a)" style="flex: 1;"> 
-                        <span style="display:flex; align-items:center; font-weight: bold;">to</span> 
-                        <input type="text" id="int-b" value="pi" placeholder="Upper (b)" style="flex: 1;">
-                    </div>
-                    <button class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border-radius: 12px; margin-top: 10px;" onclick="calculateIntegral()">Evaluate Integral</button>
-                    <div id="int-result" class="result-box glass"><span style="color: var(--text-muted)">Result will appear here.</span></div>
-                    <button class="ai-btn" id="btn-explain-int" style="display: none;" onclick="explainCalculusSteps('int')">✨ Explain Steps with AI</button>
-                    <div id="ai-int-explanation" class="ai-response-box glass"></div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- 7. AI WORD PROBLEM SOLVER -->
-    <main class="page" id="calc-ai-solver">
-        <div class="calc-wrapper" style="max-width: 800px;">
-            <div class="calc-header">
-                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">✨ AI Solver</h2>
-                <p>Powered by Gemini. Paste any math problem, and we'll break it down for you.</p>
-            </div>
-            <div class="glass" style="padding: 2.5rem; border-radius: 24px;">
-                <div class="math-input-group">
-                    <label>Your Math Problem:</label>
-                    <textarea id="ai-word-input" rows="5" placeholder="e.g., A train leaves Station A traveling at 60 mph..." style="margin-bottom: 1rem;"></textarea>
-                </div>
-                <button class="ai-btn" id="btn-solve-word" onclick="solveWordProblem()">Solve with Gemini ✨</button>
-                <div id="ai-word-result" class="ai-response-box glass"></div>
-            </div>
-        </div>
     </main>
 
     <!-- FOOTER -->

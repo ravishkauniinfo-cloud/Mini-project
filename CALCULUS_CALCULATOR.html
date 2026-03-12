@@ -1,0 +1,42 @@
+<div class="calc-wrapper" style="max-width: 900px;">
+            <div class="calc-header">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Calculus</h2>
+                <p>Differentiate and integrate complex mathematical functions.</p>
+            </div>
+            
+            <div class="glass" style="border-radius: 24px; padding: 2.5rem;">
+                <div class="calc-tabs">
+                    <button class="calc-tab-btn active" onclick="switchCalcTab(event, 'diff')">Differentiation</button>
+                    <button class="calc-tab-btn" onclick="switchCalcTab(event, 'int')">Integration</button>
+                </div>
+                <div id="tab-diff" class="calc-tab-content active">
+                    <div class="math-input-group">
+                        <label>Enter Function f(x):</label>
+                        <input type="text" id="diff-input" value="x^2 + 3*x + 1">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border-radius: 12px; margin-top: 10px;" onclick="calculateDerivative()">Find Derivative</button>
+                    <div id="diff-result" class="result-box glass"><span style="color: var(--text-muted)">Result will appear here.</span></div>
+                    <button class="ai-btn" id="btn-explain-diff" style="display: none;" onclick="explainCalculusSteps('diff')">✨ Explain Steps with AI</button>
+                    <div id="ai-diff-explanation" class="ai-response-box glass"></div>
+                </div>
+                <div id="tab-int" class="calc-tab-content">
+                    <div class="math-input-group">
+                        <label>Enter Function f(x):</label>
+                        <input type="text" id="int-input" value="2*x + cos(x)">
+                    </div>
+                    <div class="int-options" style="display: flex; gap: 20px; margin: 15px 0;">
+                        <label style="cursor: pointer; font-weight: 500;"><input type="radio" name="int-type" id="int-type-indef" checked onchange="toggleIntType()"> Indefinite</label>
+                        <label style="cursor: pointer; font-weight: 500;"><input type="radio" name="int-type" id="int-type-def" onchange="toggleIntType()"> Definite</label>
+                    </div>
+                    <div id="int-bounds-container" class="int-bounds math-input-group" style="display: none; flex-direction: row; gap: 15px;">
+                        <input type="text" id="int-a" value="0" placeholder="Lower (a)" style="flex: 1;"> 
+                        <span style="display:flex; align-items:center; font-weight: bold;">to</span> 
+                        <input type="text" id="int-b" value="pi" placeholder="Upper (b)" style="flex: 1;">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border-radius: 12px; margin-top: 10px;" onclick="calculateIntegral()">Evaluate Integral</button>
+                    <div id="int-result" class="result-box glass"><span style="color: var(--text-muted)">Result will appear here.</span></div>
+                    <button class="ai-btn" id="btn-explain-int" style="display: none;" onclick="explainCalculusSteps('int')">✨ Explain Steps with AI</button>
+                    <div id="ai-int-explanation" class="ai-response-box glass"></div>
+                </div>
+            </div>
+        </div>
