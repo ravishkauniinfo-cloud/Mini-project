@@ -1,0 +1,37 @@
+<div class="calc-wrapper">
+            <div class="calc-header">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Standard</h2>
+                <p>Beautiful glassmorphism arithmetic.</p>
+            </div>
+            <div class="std-calc-container glass">
+                <div class="std-display">
+                    <div class="prev" id="fourPrev"></div>
+                    <div class="curr" id="fourCurrent">0</div>
+                </div>
+                <div class="std-keypad">
+                    <button class="glass-btn action" onclick="fourCalc.clear()">AC</button>
+                    <button class="glass-btn action" onclick="fourCalc.toggleSign()">±</button>
+                    <button class="glass-btn action" onclick="fourCalc.appendOp('%')">%</button>
+                    <button class="glass-btn op" onclick="fourCalc.appendOp('/')">÷</button>
+                    
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('7')">7</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('8')">8</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('9')">9</button>
+                    <button class="glass-btn op" onclick="fourCalc.appendOp('*')">×</button>
+                    
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('4')">4</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('5')">5</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('6')">6</button>
+                    <button class="glass-btn op" onclick="fourCalc.appendOp('-')">−</button>
+                    
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('1')">1</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('2')">2</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('3')">3</button>
+                    <button class="glass-btn op" onclick="fourCalc.appendOp('+')">+</button>
+                    
+                    <button class="glass-btn num" style="grid-column: span 2;" onclick="fourCalc.appendNum('0')">0</button>
+                    <button class="glass-btn num" onclick="fourCalc.appendNum('.')">.</button>
+                    <button class="glass-btn op" onclick="fourCalc.compute()">=</button>
+                </div>
+            </div>
+        </div>
