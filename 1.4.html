@@ -617,12 +617,12 @@
                 
                 <div class="auth-input-wrapper">
                     <label class="auth-label">EMAIL ADDRESS</label>
-                    <input type="email" id="login-email" class="auth-input" value="ravishka1oshada@gmail.com">
+                    <input type="email" id="login-email" class="auth-input" placeholder="Email">
                 </div>
                 
                 <div class="auth-input-wrapper">
                     <label class="auth-label">PASSWORD</label>
-                    <input type="password" id="login-pass" class="auth-input" value="12345678">
+                    <input type="password" id="login-pass" class="auth-input" placeholder="Password">
                 </div>
                 
                 <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
@@ -1382,7 +1382,7 @@
 
         // --- AUTHENTICATION LOGIC & W/ ANIMATIONS ---
         function handleSignIn() {
-            const email = document.getElementById('login-email').value || 'ravishka1oshada@gmail.com';
+            const email = document.getElementById('login-email').value;
             const name = email.split('@')[0];
             currentUser = { name: name, email: email };
             updateNavAuth();
