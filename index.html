@@ -117,6 +117,30 @@
                     </a>
                 </div>
             </li>
+
+            <li class="dropdown">
+                <a class="dropdown-toggle">Student Toolkit <i class="fa-solid fa-chevron-down" style="font-size: 0.7em;"></i></a>
+                <div class="dropdown-menu" style="min-width: 250px;">
+                    <a href="javascript:void(0)" onclick="navigateTo('student-home')">
+                        <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                            <i class="fa-solid fa-home"></i>
+                        </div>
+                        Home
+                    </a>
+                    <a href="javascript:void(0)" onclick="navigateTo('student-maths')">
+                        <div class="dropdown-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        Maths Tools
+                    </a>
+                    <a href="javascript:void(0)" onclick="navigateTo('student-resources')">
+                        <div class="dropdown-icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        Resources
+                    </a>
+                </div>
+            </li>
         </ul>
 
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
@@ -971,6 +995,298 @@
                     <p style="color: var(--text-muted); line-height: 1.6;">Access a suite of everyday utility calculators. Evaluate your <strong>BMI</strong>, forecast <strong>Compound Interest</strong> over time, estimate your monthly <strong>Mortgage</strong> payments, or calculate a cumulative <strong>GPA</strong>. Every miscellaneous calculator dynamically displays the exact mathematical equation used to reach the final answer.</p>
                 </div>
 
+            </div>
+        </div>
+    </main>
+
+    <!-- STUDENT TOOLKIT - HOME -->
+    <main class="page" id="student-home">
+        <div class="calc-wrapper" style="max-width: 1000px;">
+            <button class="btn-back" onclick="navigateTo('home')"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+            <div class="calc-header">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Student Toolkit</h2>
+                <p>Your comprehensive mathematics learning companion.</p>
+            </div>
+            
+            <section class="hero" style="text-align: center; margin-bottom: 3rem;">
+                <h1 class="hero-title animated-gradient-text" style="font-size: 2.5rem;">Welcome to Your<br>Mathematics Hub</h1>
+                <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">Access all your essential math tools, resources, and learning materials in one beautiful, organized platform designed specifically for students.</p>
+                <div class="btn-group" style="margin-top: 2rem;">
+                    <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 50px;" onclick="navigateTo('student-maths')">Explore Maths Tools</button>
+                    <button class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 50px;" onclick="navigateTo('student-resources')">View Resources</button>
+                </div>
+            </section>
+            
+            <section class="tools-grid" style="margin-bottom: 3rem;">
+                <div class="tool-card glass" onclick="navigateTo('calc-graph')">
+                    <i class="fa-solid fa-chart-line tool-icon"></i>
+                    <h3>Graphing</h3>
+                    <p>Visualize equations and plot functions interactively.</p>
+                </div>
+                <div class="tool-card glass" onclick="navigateTo('calc-sci')">
+                    <i class="fa-solid fa-flask tool-icon"></i>
+                    <h3>Scientific</h3>
+                    <p>Advanced functions, trigonometry, and statistics.</p>
+                </div>
+                <div class="tool-card glass" onclick="navigateTo('calc-four')">
+                    <i class="fa-solid fa-calculator tool-icon"></i>
+                    <h3>Standard</h3>
+                    <p>Beautiful liquid glass standard arithmetic.</p>
+                </div>
+                <div class="tool-card glass" onclick="navigateTo('calc-matrix')">
+                    <i class="fa-solid fa-table-cells tool-icon"></i>
+                    <h3>Matrix</h3>
+                    <p>Solve linear equations and compute determinants.</p>
+                </div>
+                <div class="tool-card glass converter-card" onclick="navigateTo('calc-converter')">
+                    <i class="fa-solid fa-ruler-combined tool-icon" style="background: linear-gradient(135deg, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                    <h3>Unit Converter</h3>
+                    <p>Instantly convert length, weight, temps, and more.</p>
+                </div>
+                <div class="tool-card glass" onclick="navigateTo('calc-num-sys')">
+                    <i class="fa-solid fa-microchip tool-icon" style="background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                    <h3>Number System</h3>
+                    <p>Convert between Binary, Decimal, Hex, and Octal formats.</p>
+                </div>
+                <div class="tool-card glass calculus-card" onclick="navigateTo('calc-calculus')">
+                    <div style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 3.5rem; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; font-weight: bold; line-height: 1.2;">&int;</div>
+                    <h3>Calculus</h3>
+                    <p>Compute derivatives and definite integrals natively.</p>
+                </div>
+                <div class="tool-card glass" onclick="navigateTo('calc-misc')">
+                    <i class="fa-solid fa-layer-group tool-icon" style="background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                    <h3>Misc Calculators</h3>
+                    <p>Calculate BMI, Mortgage, Compound Interest, and GPA.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- STUDENT TOOLKIT - MATHS TOOLS -->
+    <main class="page" id="student-maths">
+        <div class="calc-wrapper" style="max-width: 1000px;">
+            <button class="btn-back" onclick="navigateTo('student-home')"><i class="fa-solid fa-arrow-left"></i> Back to Student Toolkit</button>
+            <div class="calc-header">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Maths Tools</h2>
+                <p>Comprehensive collection of mathematical calculators and utilities.</p>
+            </div>
+            
+            <div class="glass" style="border-radius: 24px; padding: 3rem;">
+                <h3 style="font-size: 2rem; margin-bottom: 2rem; color: var(--primary); font-weight: 700; text-align: center;">All Available Calculators</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div class="tool-card glass" onclick="navigateTo('calc-four')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-calculator"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Standard Calculator</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Basic arithmetic operations</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Perform addition, subtraction, multiplication, and division with a beautiful glassmorphism interface.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-sci')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(20, 184, 166, 0.2); color: #14b8a6; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Scientific Calculator</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Advanced mathematical functions</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Evaluate trigonometric, logarithmic, and exponential functions with precision.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-graph')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Graphing Calculator</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Interactive function plotting</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Plot multiple functions simultaneously with interactive zoom and pan capabilities.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-matrix')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(99, 102, 241, 0.2); color: #6366f1; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-border-all"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Matrix Calculator</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Linear algebra operations</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Perform matrix operations including multiplication, transposition, and determinants.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-converter')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Unit Converter</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Measurement conversions</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Convert between different units of measurement for length, weight, temperature, and more.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-num-sys')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Number System</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Base conversions</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Convert between binary, decimal, hexadecimal, and octal number systems.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-calculus')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #ec4899; width: 50px; height: 50px;">
+                                <span style="font-family: 'Times New Roman', serif; font-size: 1.6rem; font-style: italic; font-weight: bold; line-height: 1;">&int;</span>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Calculus</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Derivatives and integrals</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Compute derivatives, integrals, and analyze functions with graphical representations.</p>
+                    </div>
+                    
+                    <div class="tool-card glass" onclick="navigateTo('calc-misc')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="dropdown-icon-box" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; width: 50px; height: 50px;">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Misc Calculators</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Everyday utilities</p>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.6;">BMI, mortgage, compound interest, and GPA calculators for practical applications.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- STUDENT TOOLKIT - RESOURCES -->
+    <main class="page" id="student-resources">
+        <div class="calc-wrapper" style="max-width: 1000px;">
+            <button class="btn-back" onclick="navigateTo('student-home')"><i class="fa-solid fa-arrow-left"></i> Back to Student Toolkit</button>
+            <div class="calc-header">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 3.5rem;">Resources</h2>
+                <p>Helpful guides, documentation, and learning materials.</p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                
+                <div class="glass" style="border-radius: 24px; padding: 3rem;">
+                    <h3 style="font-size: 2rem; margin-bottom: 2rem; color: var(--primary); font-weight: 700; text-align: center;">Learning Resources</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                        <div class="tool-card glass" onclick="navigateTo('page-help')" style="cursor: pointer; transition: transform 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="dropdown-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6; width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Help Center</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">How-to guides and tutorials</p>
+                                </div>
+                            </div>
+                            <p style="color: var(--text-muted); line-height: 1.6;">Comprehensive guides on how to use each calculator and tool effectively.</p>
+                        </div>
+                        
+                        <div class="tool-card glass" onclick="navigateTo('page-about')" style="cursor: pointer; transition: transform 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981; width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">About MathHub</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Platform information</p>
+                                </div>
+                            </div>
+                            <p style="color: var(--text-muted); line-height: 1.6;">Learn about the mission and features of the MathHub platform.</p>
+                        </div>
+                        
+                        <div class="tool-card glass" style="cursor: pointer; transition: transform 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="dropdown-icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6; width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-book-open"></i>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Formula Reference</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Mathematical formulas</p>
+                                </div>
+                            </div>
+                            <p style="color: var(--text-muted); line-height: 1.6;">Quick reference guide for common mathematical formulas and equations.</p>
+                        </div>
+                        
+                        <div class="tool-card glass" style="cursor: pointer; transition: transform 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="dropdown-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; width: 50px; height: 50px;">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1.3rem; color: var(--text-main);">Study Tips</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Learning strategies</p>
+                                </div>
+                            </div>
+                            <p style="color: var(--text-muted); line-height: 1.6;">Effective study techniques and tips for mastering mathematical concepts.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass" style="border-radius: 24px; padding: 3rem;">
+                    <h3 style="font-size: 2rem; margin-bottom: 2rem; color: var(--primary); font-weight: 700; text-align: center;">Frequently Asked Questions</h3>
+                    
+                    <div class="faq-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                            <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                                <span><i class="fa-solid fa-question-circle" style="color: var(--primary); margin-right: 0.5rem;"></i>What is MathHub?</span>
+                                <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                            </button>
+                            <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                                MathHub is your ultimate all-in-one mathematics platform featuring beautiful, interactive calculators for everything from basic arithmetic to advanced calculus and graphing.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                            <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                                <span><i class="fa-solid fa-dollar-sign" style="color: var(--secondary); margin-right: 0.5rem;"></i>Is MathHub free to use?</span>
+                                <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                            </button>
+                            <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                                Yes! MathHub is completely free to use. All calculators and tools are available without any subscription or payment required.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                            <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                                <span><i class="fa-solid fa-shield-alt" style="color: #8b5cf6; margin-right: 0.5rem;"></i>Is my data secure?</span>
+                                <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                            </button>
+                            <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                                Yes, all calculations are performed locally in your browser. No data is sent to our servers, ensuring your privacy and security.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>

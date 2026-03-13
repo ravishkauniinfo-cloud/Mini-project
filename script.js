@@ -1024,6 +1024,22 @@ let currentUser = null;
             }
         };
 
+        // --- FAQ ACCORDION FUNCTION ---
+        function toggleFAQ(button) {
+            const faqItem = button.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            const arrow = button.querySelector('.faq-arrow');
+            
+            // Toggle the answer visibility
+            if (answer.style.display === 'block') {
+                answer.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                answer.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
         // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             if(document.getElementById('calc-sci').classList.contains('active')) sciApp.init();
