@@ -609,6 +609,163 @@ let currentUser = null;
             }
         };
 
+        // --- PRACTICE ZONE ---
+        const practiceZone = {
+            difficulty: 'medium',
+            questionType: 'mixed',
+            currentQuestion: null,
+            currentAnswer: null,
+            score: { correct: 0, incorrect: 0, streak: 0 },
+
+            changeDifficulty(level) {
+                this.difficulty = level;
+                this.resetScore();
+            },
+
+            changeType(type) {
+                this.questionType = type;
+                this.resetScore();
+            },
+
+            generateQuestion() {
+                const difficulty = this.difficulty;
+                const type = this.questionType;
+
+                let question = {};
+                let num1, num2, answer;
+
+                // Generate numbers based on difficulty
+                const getNumber = (level) => {
+                    switch(level) {
+                        case 'easy': return Math.floor(Math.random() * 20) + 1;
+                        case 'medium': return Math.floor(Math.random() * 100) + 1;
+                        case 'hard': return Math.floor(Math.random() * 1000) + 1;
+                        default: return Math.floor(Math.random() * 50) + 1;
+                    }
+                };
+
+                num1 = getNumber(difficulty);
+                num2 = getNumber(difficulty);
+
+                // Ensure num2 is not zero for division
+                if (type === 'division') {
+                    while (num2 === 0) num2 = getNumber(difficulty);
+                }
+
+                switch(type) {
+                    case 'addition':
+                        answer = num1 + num2;
+                        question.text = `${num1} + ${num2} = ?`;
+                        question.hint = "Add the two numbers together";
+                        break;
+                    case 'subtraction':
+                        // Ensure positive result
+                        if (num1 < num2) [num1, num2] = [num2, num1];
+                        answer = num1 - num2;
+                        question.text = `${num1} - ${num2} = ?`;
+                        question.hint = "Subtract the smaller number from the larger one";
+                        break;
+                    case 'multiplication':
+                        answer = num1 * num2;
+                        question.text = `${num1} × ${num2} = ?`;
+                        question.hint = "Multiply the two numbers";
+                        break;
+                    case 'division':
+                        answer = Math.round((num1 / num2) * 100) / 100; // Round to 2 decimal places
+                        question.text = `${num1} ÷ ${num2} = ?`;
+                        question.hint = "Divide the first number by the second";
+                        break;
+                    case 'algebra':
+                        // Simple algebra: x + a = b, find x
+                        const a = getNumber(difficulty);
+                        const b = getNumber(difficulty) + a;
+                        answer = b - a;
+                        question.text = `x + ${a} = ${b}, what is x?`;
+                        question.hint = "Subtract the known number from both sides";
+                        break;
+                    case 'mixed':
+                    default:
+                        const operations = ['addition', 'subtraction', 'multiplication', 'division'];
+                        const randomOp = operations[Math.floor(Math.random() * operations.length)];
+                        return this.generateQuestionForType(randomOp, difficulty);
+                }
+
+                question.answer = answer;
+                return question;
+            },
+
+            generateQuestionForType(type, difficulty) {
+                // Helper method for mixed questions
+                const originalType = this.questionType;
+                this.questionType = type;
+                const question = this.generateQuestion();
+                this.questionType = originalType;
+                return question;
+            },
+
+            newQuestion() {
+                this.currentQuestion = this.generateQuestion();
+                this.currentAnswer = this.currentQuestion.answer;
+
+                document.getElementById('question-text').textContent = this.currentQuestion.text;
+                document.getElementById('question-hint').textContent = this.currentQuestion.hint;
+                document.getElementById('practice-answer').value = '';
+                document.getElementById('practice-answer').focus();
+                document.getElementById('check-answer-btn').disabled = false;
+                document.getElementById('practice-feedback').innerHTML = '';
+            },
+
+            checkAnswer() {
+                const userAnswer = parseFloat(document.getElementById('practice-answer').value.trim());
+
+                if (isNaN(userAnswer)) {
+                    this.showFeedback('Please enter a valid number!', 'error');
+                    return;
+                }
+
+                const isCorrect = Math.abs(userAnswer - this.currentAnswer) < 0.01; // Allow small floating point differences
+
+                if (isCorrect) {
+                    this.score.correct++;
+                    this.score.streak++;
+                    this.showFeedback('Correct! 🎉', 'success');
+                } else {
+                    this.score.incorrect++;
+                    this.score.streak = 0;
+                    this.showFeedback(`Incorrect. The answer is ${this.currentAnswer}`, 'error');
+                }
+
+                this.updateScore();
+                document.getElementById('check-answer-btn').disabled = true;
+            },
+
+            showFeedback(message, type) {
+                const feedbackDiv = document.getElementById('practice-feedback');
+                const color = type === 'success' ? '#10b981' : '#ef4444';
+                feedbackDiv.innerHTML = `<div style="font-size: 1.2rem; font-weight: 600; color: ${color}; padding: 1rem; background: rgba(${color === '#10b981' ? '16, 185, 129' : '239, 68, 68'}, 0.1); border-radius: 8px; border: 1px solid rgba(${color === '#10b981' ? '16, 185, 129' : '239, 68, 68'}, 0.2);">${message}</div>`;
+            },
+
+            updateScore() {
+                const total = this.score.correct + this.score.incorrect;
+                const accuracy = total > 0 ? Math.round((this.score.correct / total) * 100) : 0;
+
+                document.getElementById('correct-count').textContent = this.score.correct;
+                document.getElementById('incorrect-count').textContent = this.score.incorrect;
+                document.getElementById('accuracy-percent').textContent = `${accuracy}%`;
+                document.getElementById('streak-count').textContent = this.score.streak;
+            },
+
+            resetScore() {
+                this.score = { correct: 0, incorrect: 0, streak: 0 };
+                this.updateScore();
+                document.getElementById('practice-feedback').innerHTML = '';
+                document.getElementById('question-text').textContent = 'Click "New Question" to start practicing!';
+                document.getElementById('question-hint').textContent = '';
+                document.getElementById('practice-answer').value = '';
+                document.getElementById('check-answer-btn').disabled = true;
+            }
+        };
+
         // --- 6. UNIT CONVERTER LOGIC ---
         const converterApp = {
             currentCategory: 'length',
