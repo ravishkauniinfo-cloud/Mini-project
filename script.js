@@ -145,6 +145,192 @@ let currentUser = null;
             }
         }
 
+        // --- CALCULATION HISTORY MANAGER ---
+        const calcHistory = {
+            history: [],
+            maxEntries: 50,
+
+            init() {
+                this.loadHistory();
+                this.renderHistoryPanel();
+            },
+
+            saveCalculation(calculator, input, result, timestamp = new Date()) {
+                const entry = {
+                    id: Date.now(),
+                    calculator: calculator,
+                    input: input,
+                    result: result,
+                    timestamp: timestamp.toISOString()
+                };
+
+                this.history.unshift(entry);
+
+                // Keep only the most recent entries
+                if (this.history.length > this.maxEntries) {
+                    this.history = this.history.slice(0, this.maxEntries);
+                }
+
+                this.saveToStorage();
+                this.renderHistoryPanel();
+                this.updateHistoryCount();
+            },
+
+            loadHistory() {
+                try {
+                    const stored = localStorage.getItem('mathCalcHistory');
+                    if (stored) {
+                        this.history = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.warn('Failed to load calculation history:', e);
+                    this.history = [];
+                }
+            },
+
+            saveToStorage() {
+                try {
+                    localStorage.setItem('mathCalcHistory', JSON.stringify(this.history));
+                } catch (e) {
+                    console.warn('Failed to save calculation history:', e);
+                }
+            },
+
+            clearHistory() {
+                this.history = [];
+                this.saveToStorage();
+                this.renderHistoryPanel();
+                this.updateHistoryCount();
+            },
+
+            deleteEntry(id) {
+                this.history = this.history.filter(entry => entry.id !== id);
+                this.saveToStorage();
+                this.renderHistoryPanel();
+                this.updateHistoryCount();
+            },
+
+            updateHistoryCount() {
+                const countElement = document.getElementById('history-count');
+                if (countElement) {
+                    const count = this.history.length;
+                    countElement.textContent = count > 99 ? '99+' : count;
+                    countElement.style.display = count > 0 ? 'flex' : 'none';
+                }
+            },
+
+            exportToPDF() {
+                if (this.history.length === 0) {
+                    alert('No calculation history to export.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Add title
+                doc.setFontSize(20);
+                doc.text('Math Calculator History', 20, 30);
+
+                // Add date
+                doc.setFontSize(12);
+                doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 45);
+
+                let yPosition = 65;
+
+                this.history.forEach((entry, index) => {
+                    if (yPosition > 270) { // New page if needed
+                        doc.addPage();
+                        yPosition = 30;
+                    }
+
+                    // Entry header
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`${entry.calculator} - ${new Date(entry.timestamp).toLocaleString()}`, 20, yPosition);
+                    yPosition += 10;
+
+                    // Input
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Input: ${entry.input}`, 25, yPosition);
+                    yPosition += 8;
+
+                    // Result
+                    doc.text(`Result: ${entry.result}`, 25, yPosition);
+                    yPosition += 15;
+                });
+
+                // Save the PDF
+                doc.save('math-calculator-history.pdf');
+            },
+
+            renderHistoryPanel() {
+                const panel = document.getElementById('calc-history-panel');
+                if (!panel) return;
+
+                if (this.history.length === 0) {
+                    panel.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            <i class="fa-solid fa-history" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No calculations yet. Start calculating to build your history!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                panel.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 1rem;">
+                        <h3 style="margin: 0; font-size: 1.2rem;">Calculation History</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="calcHistory.exportToPDF()" title="Export as PDF">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </button>
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="calcHistory.clearHistory()" title="Clear History">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${this.history.map(entry => `
+                            <div class="history-entry glass" style="margin: 0.5rem 1rem; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                    <div style="font-weight: 600; color: var(--primary); font-size: 0.9rem;">${entry.calculator}</div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-size: 0.8rem; color: var(--text-muted);">${new Date(entry.timestamp).toLocaleString()}</span>
+                                        <button class="icon-btn" style="width: 20px; height: 20px; font-size: 0.7rem;" onclick="calcHistory.deleteEntry(${entry.id})" title="Delete entry">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style="font-family: 'Times New Roman', serif; font-size: 1.1rem; margin-bottom: 0.3rem; color: var(--text-main);">
+                                    ${entry.input}
+                                </div>
+                                <div style="font-family: 'Times New Roman', serif; font-size: 1.2rem; font-weight: 600; color: var(--secondary);">
+                                    = ${entry.result}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            togglePanel() {
+                const panel = document.getElementById('calc-history-panel');
+                const button = document.getElementById('history-toggle-btn');
+
+                if (panel.style.display === 'none' || !panel.style.display) {
+                    panel.style.display = 'block';
+                    button.innerHTML = '<i class="fa-solid fa-times"></i>';
+                    button.title = 'Hide History';
+                } else {
+                    panel.style.display = 'none';
+                    button.innerHTML = '<i class="fa-solid fa-history"></i>';
+                    button.title = 'Show History';
+                }
+            }
+        };
+
         // --- ROUTING ---
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -240,6 +426,13 @@ let currentUser = null;
                     case '%': result = prev % curr; break;
                     default: return;
                 }
+                
+                // Save to history before updating current
+                if (final) {
+                    const input = `${this.previous} ${this.op} ${this.current}`;
+                    calcHistory.saveCalculation('Standard Calculator', input, result.toString());
+                }
+                
                 this.current = result.toString();
                 if(final) { this.op = undefined; this.previous = ''; this.shouldResetNext = true; }
                 this.updateUI();
@@ -279,6 +472,10 @@ let currentUser = null;
                     if (this.angleMode === 'deg' && this.expr.includes('sin(')) result = math.evaluate(toEvaluate.replace(/sin\(/g, 'sin((pi/180)*'));
                     result = math.format(result, {precision: 10});
                     document.getElementById('sci-history').innerText = this.expr + ' =';
+                    
+                    // Save to history
+                    calcHistory.saveCalculation('Scientific Calculator', this.expr, result);
+                    
                     this.expr = result.toString(); this.ans = result; this.updateUI();
                 } catch (e) {
                     document.getElementById('sci-input').innerText = 'Error'; setTimeout(() => this.clearAll(), 1500);
@@ -351,6 +548,21 @@ let currentUser = null;
                     displayModeBar: false,
                     scrollZoom: true,
                     doubleClick: false
+                });
+            },
+            downloadGraph() {
+                const graphDiv = document.getElementById('plotly-graph');
+                if (!graphDiv) {
+                    alert('No graph to download. Please add some equations first.');
+                    return;
+                }
+
+                // Use Plotly's built-in download functionality
+                Plotly.downloadImage(graphDiv, {
+                    format: 'png',
+                    width: 1200,
+                    height: 800,
+                    filename: `math-graph-${new Date().toISOString().split('T')[0]}`
                 });
             }
         };
@@ -1266,5 +1478,8 @@ let currentUser = null;
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize calculation history
+            calcHistory.init();
+            
             if(document.getElementById('calc-sci').classList.contains('active')) sciApp.init();
         });

@@ -23,6 +23,10 @@
     <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas for screenshot functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script src="script.js"></script>
 
@@ -150,6 +154,10 @@
         </ul>
 
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
+            <button class="icon-btn" id="history-toggle-btn" onclick="calcHistory.togglePanel()" title="Show History" style="position: relative;">
+                <i class="fa-solid fa-history"></i>
+                <span id="history-count" style="position: absolute; top: -8px; right: -8px; background: var(--primary); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: 600;">0</span>
+            </button>
             <div id="nav-auth-container">
                 <button class="btn btn-outline" style="padding: 0.5rem 1.2rem; font-size: 0.95rem; border-radius: 8px;" onclick="openLogin()">Login</button>
             </div>
@@ -158,6 +166,11 @@
             </button>
         </div>
     </nav>
+
+    <!-- CALCULATION HISTORY PANEL -->
+    <div id="calc-history-panel" class="history-panel glass" style="display: none; position: fixed; top: 80px; right: 20px; width: 350px; max-height: 70vh; z-index: 1000; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); overflow: hidden;">
+        <!-- History content will be dynamically loaded here -->
+    </div>
 
     <!-- LOGIN / SIGN UP / PROFILE MODAL -->
     <div class="modal-overlay" id="loginModal">
@@ -522,7 +535,12 @@
                 <div class="graphing-sidebar">
                     <div style="padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="margin: 0; font-size: 1.2rem;">Expressions</h3>
-                        <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="graphApp.addEquation()">+ Add</button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="graphApp.downloadGraph()" title="Download Graph as Image">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                            <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="graphApp.addEquation()">+ Add</button>
+                        </div>
                     </div>
                     <div id="equation-list" class="graph-eq-list">
                         <!-- dynamic equations load here -->
