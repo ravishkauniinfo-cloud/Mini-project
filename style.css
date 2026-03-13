@@ -359,9 +359,55 @@
         .unit-item.active { background: var(--gradient); color: white; border-color: transparent; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
 
         /* Number System Specifics */
-        .glass-select { width: 100%; padding: 1.2rem; font-size: 1.1rem; font-family: 'Inter', sans-serif; font-weight: 500; border: 1px solid var(--glass-border); border-radius: 12px; background: var(--glass-panel); color: var(--text-main); outline: none; appearance: none; cursor: pointer; transition: border 0.2s; }
-        .glass-select:focus { border-color: var(--primary); }
-        .glass-select option { background: var(--bg-base); color: var(--text-main); }
+        .glass-select {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--glass-panel) 0%, rgba(255, 255, 255, 0.3) 100%);
+            color: var(--text-main);
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .glass-select:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2);
+            transform: translateY(-1px);
+        }
+        .glass-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 6px 20px rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0.4) 100%);
+        }
+        .glass-select option {
+            background: var(--bg-base);
+            color: var(--text-main);
+        }
+
+        /* Enhanced dropdown chevron */
+        .dropdown-chevron {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .glass-select:hover + .dropdown-chevron,
+        .glass-select:focus + .dropdown-chevron {
+            color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+        }
         .bit-cell { width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; font-family: 'Courier New', monospace; font-size: 1.1rem; font-weight: bold; color: var(--text-main); transition: background 0.2s; }
 
         /* GPA Dynamic Rows */

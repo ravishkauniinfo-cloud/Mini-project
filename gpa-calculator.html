@@ -313,6 +313,7 @@
                 
                 <div id="gpa-result-container" class="glass" style="display: none; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; overflow-x: auto;">
                     <div id="gpa-general-formula" style="text-align: center; margin-bottom: 1rem; font-size: 1.2rem; color: var(--text-main);"></div>
+                    <div id="gpa-sums-display" style="text-align: center; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-muted);"></div>
                     <table class="gpa-table">
                         <thead>
                             <tr>
@@ -399,8 +400,9 @@
 
                 if (totalCredits > 0) {
                     const gpa = totalPoints / totalCredits;
-                    generalFormula.innerHTML = '<strong>GPA Formula:</strong> Total Grade Points ÷ Total Credits';
-                    finalCalc.innerHTML = `<strong>Final GPA: ${gpa.toFixed(2)}</strong> (Total Points: ${totalPoints.toFixed(2)}, Total Credits: ${totalCredits})`;
+                    generalFormula.innerHTML = '<strong>GPA =</strong> <span style="font-family: serif;">∑</span>(Grade Point × Credit Hours) / <span style="font-family: serif;">∑</span>Credit Hours';
+                    document.getElementById('gpa-sums-display').innerHTML = `<strong>∑(Grade Point × Credit Hours) = ${totalPoints.toFixed(2)}</strong><br><strong>∑Credit Hours = ${totalCredits.toFixed(2)}</strong>`;
+                    finalCalc.innerHTML = `<strong>Final GPA = ${totalPoints.toFixed(2)} / ${totalCredits.toFixed(2)} = ${gpa.toFixed(2)}</strong>`;
                     resultContainer.style.display = 'block';
                 } else {
                     resultContainer.style.display = 'none';
