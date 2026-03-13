@@ -2,25 +2,84 @@ let currentUser = null;
 
         // --- AUTHENTICATION LOGIC & W/ ANIMATIONS ---
         function handleSignIn() {
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            
+            // Validation
+            if (!email || !password) {
+                showAuthError('Please fill in both email and password fields.');
+                return;
+            }
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAuthError('Please enter a valid email address.');
+                return;
+            }
+            
             const name = email.split('@')[0];
             currentUser = { name: name, email: email };
             updateNavAuth();
             document.getElementById('loginModal').classList.remove('show');
+            clearAuthErrors();
         }
 
         function handleSignUp() {
-            const user = document.getElementById('reg-user').value || 'NewUser';
-            const email = document.getElementById('reg-email').value || 'user@example.com';
+            const user = document.getElementById('reg-user').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            
+            // Validation
+            if (!user || !email || !password) {
+                showAuthError('Please fill in all required fields (username, email, and password).');
+                return;
+            }
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAuthError('Please enter a valid email address.');
+                return;
+            }
+            
+            // Password strength validation
+            if (password.length < 6) {
+                showAuthError('Password must be at least 6 characters long.');
+                return;
+            }
+            
             currentUser = { name: user, email: email };
             updateNavAuth();
             document.getElementById('loginModal').classList.remove('show');
+            clearAuthErrors();
         }
 
         function handleSignOut() {
             currentUser = null;
             updateNavAuth();
             document.getElementById('loginModal').classList.remove('show');
+        }
+
+        // Authentication validation helpers
+        function showAuthError(message) {
+            let errorDiv = document.getElementById('auth-error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'auth-error-message';
+                errorDiv.className = 'auth-error-message';
+                const modalContent = document.querySelector('.login-modal');
+                modalContent.insertBefore(errorDiv, modalContent.firstChild);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function clearAuthErrors() {
+            const errorDiv = document.getElementById('auth-error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
         }
 
         function updateNavAuth() {
@@ -48,6 +107,9 @@ let currentUser = null;
         }
 
         function switchAuthForm(targetForm, instant = false) {
+            // Clear any previous errors when switching forms
+            clearAuthErrors();
+            
             const loginForm = document.getElementById('form-login');
             const signupForm = document.getElementById('form-signup');
             const profileForm = document.getElementById('form-profile');
