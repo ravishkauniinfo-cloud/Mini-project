@@ -121,23 +121,23 @@
             <li class="dropdown">
                 <a class="dropdown-toggle">Student Toolkit <i class="fa-solid fa-chevron-down" style="font-size: 0.7em;"></i></a>
                 <div class="dropdown-menu" style="min-width: 250px;">
-                    <a href="javascript:void(0)" onclick="navigateTo('student-home')">
+                    <a href="student-home.html">
                         <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
                             <i class="fa-solid fa-home"></i>
                         </div>
                         Home
                     </a>
-                    <a href="javascript:void(0)" onclick="navigateTo('student-maths')">
+                    <a href="gpa-calculator.html">
                         <div class="dropdown-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
-                            <i class="fa-solid fa-calculator"></i>
+                            <i class="fa-solid fa-graduation-cap"></i>
                         </div>
-                        Maths Tools
+                        GPA Calculator
                     </a>
-                    <a href="javascript:void(0)" onclick="navigateTo('student-resources')">
+                    <a href="study-timer.html">
                         <div class="dropdown-icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
-                            <i class="fa-solid fa-book"></i>
+                            <i class="fa-solid fa-clock"></i>
                         </div>
-                        Resources
+                        Study Timer
                     </a>
                 </div>
             </li>
@@ -251,8 +251,9 @@
             <div class="tool-card glass" onclick="navigateTo('calc-matrix')"><i class="fa-solid fa-table-cells tool-icon"></i><h3>Matrix</h3><p>Solve linear equations and compute determinants.</p></div>
             <div class="tool-card glass converter-card" onclick="navigateTo('calc-converter')"><i class="fa-solid fa-ruler-combined tool-icon" style="background: linear-gradient(135deg, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Unit Converter</h3><p>Instantly convert length, weight, temps, and more.</p></div>
             <div class="tool-card glass" onclick="navigateTo('calc-num-sys')"><i class="fa-solid fa-microchip tool-icon" style="background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Number System</h3><p>Convert between Binary, Decimal, Hex, and Octal formats.</p></div>
-            <div class="tool-card glass calculus-card" onclick="navigateTo('calc-calculus')"><div style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 3.5rem; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; font-weight: bold; line-height: 1.2;">&int;</div><h3>Calculus</h3><p>Compute derivatives and definite integrals natively.</p></div>
-            <div class="tool-card glass" onclick="navigateTo('calc-misc')"><i class="fa-solid fa-layer-group tool-icon" style="background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Misc Calculators</h3><p>Calculate BMI, Mortgage, Compound Interest, and GPA.</p></div>
+            <div class="tool-card glass" onclick="navigateTo('calc-calculus')"><div style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 3.5rem; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; font-weight: bold; line-height: 1.2;">&int;</div><h3>Calculus</h3><p>Compute derivatives and definite integrals natively.</p></div>
+            <div class="tool-card glass" onclick="window.location.href='student-home.html'"><i class="fa-solid fa-graduation-cap tool-icon" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Student Toolkit</h3><p>GPA Calculator, Study Timer, and academic tools.</p></div>
+            <div class="tool-card glass" onclick="navigateTo('calc-misc')"><i class="fa-solid fa-layer-group tool-icon" style="background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Misc Calculators</h3><p>Calculate BMI, Mortgage, and Compound Interest.</p></div>
         </section>
 
         <!-- FAQ Section -->
@@ -519,6 +520,9 @@
                     </div>
                     <div id="equation-list" class="graph-eq-list">
                         <!-- dynamic equations load here -->
+                    </div>
+                    <div style="padding: 15px; border-top: 1px solid var(--glass-border);">
+                        <button class="btn btn-outline" style="width: 100%; padding: 0.7rem 0.8rem; font-size: 0.9rem;" onclick="graphApp.clearAll()">Clear All</button>
                     </div>
                 </div>
                 <div class="graphing-canvas-area" id="plotly-graph"></div>
@@ -945,6 +949,7 @@
                 <p style="margin-bottom: 1.5rem;">We've eliminated the need to constantly bounce between different websites and clunky, outdated apps. Whether you are solving standard everyday arithmetic, graphing complex algebraic equations, performing advanced matrix algebra, converting number systems on the fly, or evaluating calculus integrals—MathHub handles it all with zero server lag right inside your browser.</p>
                 
                 <p>Experience a seamless, interactive learning environment wrapped in a premium, ultra-responsive "Liquid Glass" design framework. Mathematics has never looked this good.</p>
+                <p style="margin-top: 1.5rem;">The <strong>Student Toolkit</strong> extends MathHub with focused study aids like a <strong>GPA calculator</strong>, a <strong>Pomodoro study timer</strong>, and curated <strong>learning resources</strong>. It’s built to help students stay organized and make study sessions more productive without leaving the platform.</p>
             </div>
         </div>
     </main>
@@ -993,6 +998,11 @@
                 <div class="glass" style="border-radius: 20px; padding: 2rem;">
                     <h3 style="color: #f43f5e; font-size: 1.5rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-layer-group"></i> Misc Calculators</h3>
                     <p style="color: var(--text-muted); line-height: 1.6;">Access a suite of everyday utility calculators. Evaluate your <strong>BMI</strong>, forecast <strong>Compound Interest</strong> over time, estimate your monthly <strong>Mortgage</strong> payments, or calculate a cumulative <strong>GPA</strong>. Every miscellaneous calculator dynamically displays the exact mathematical equation used to reach the final answer.</p>
+                </div>
+
+                <div class="glass" style="border-radius: 20px; padding: 2rem;">
+                    <h3 style="color: #8b5cf6; font-size: 1.5rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-graduation-cap"></i> Student Toolkit</h3>
+                    <p style="color: var(--text-muted); line-height: 1.6;">The Student Toolkit provides a dedicated space for academic helpers: a <strong>GPA calculator</strong> to track your grades, a built-in <strong>study timer</strong> (Pomodoro-ready), and quick access to curated study resources. Use the navigation dropdown or the toolkit home to jump between tools and resources instantly.</p>
                 </div>
 
             </div>

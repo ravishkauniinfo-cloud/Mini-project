@@ -238,6 +238,11 @@ let currentUser = null;
                 this.equations.push({ id: this.nextId++, expr: '', color: this.colors[this.equations.length % this.colors.length] });
                 this.renderList();
             },
+            clearAll() {
+                this.equations = [];
+                this.renderList();
+                this.plot();
+            },
             removeEquation(id) { this.equations = this.equations.filter(eq => eq.id !== id); this.renderList(); this.plot(); },
             updateEquation(id, val) {
                 const eq = this.equations.find(e => e.id === id);
