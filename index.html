@@ -230,6 +230,83 @@
             <div class="tool-card glass calculus-card" onclick="navigateTo('calc-calculus')"><div style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 3.5rem; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; font-weight: bold; line-height: 1.2;">&int;</div><h3>Calculus</h3><p>Compute derivatives and definite integrals natively.</p></div>
             <div class="tool-card glass" onclick="navigateTo('calc-misc')"><i class="fa-solid fa-layer-group tool-icon" style="background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Misc Calculators</h3><p>Calculate BMI, Mortgage, Compound Interest, and GPA.</p></div>
         </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" style="max-width: 1000px; margin: 4rem auto; padding: 0 2rem;">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 3rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>
+            
+            <div class="faq-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-question-circle" style="color: var(--primary); margin-right: 0.5rem;"></i>What is MathHub?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        MathHub is your ultimate all-in-one mathematics platform featuring beautiful, interactive calculators for everything from basic arithmetic to advanced calculus and graphing.
+                    </div>
+                </div>
+                
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-dollar-sign" style="color: var(--secondary); margin-right: 0.5rem;"></i>Is MathHub free to use?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        Yes! MathHub is completely free to use. All calculators and tools are available without any subscription or payment required.
+                    </div>
+                </div>
+                
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-calculator" style="color: var(--tertiary); margin-right: 0.5rem;"></i>What calculators are available?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        We offer Standard, Scientific, Graphing, Matrix, Unit Converter, Number System, Calculus, and Miscellaneous calculators including BMI, Mortgage, and GPA calculators.
+                    </div>
+                </div>
+                
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-chart-line" style="color: #10b981; margin-right: 0.5rem;"></i>How do I use the graphing calculator?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        Simply enter your equation in the input field and click "Plot". You can add multiple functions, adjust the range, and interact with the graph using zoom and pan controls.
+                    </div>
+                </div>
+                
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-save" style="color: #f59e0b; margin-right: 0.5rem;"></i>Can I save my calculations?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        Currently, calculations are not saved automatically. We recommend copying important results or taking screenshots for your records.
+                    </div>
+                </div>
+                
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-shield-alt" style="color: #8b5cf6; margin-right: 0.5rem;"></i>Is my data secure?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        Yes, all calculations are performed locally in your browser. No data is sent to our servers, ensuring your privacy and security.
+                    </div>
+                </div>
+                
+                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
+                    <button class="faq-question" onclick="toggleFAQ(this)" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
+                        <span><i class="fa-solid fa-envelope" style="color: #ec4899; margin-right: 0.5rem;"></i>How can I contact support?</span>
+                        <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                    </button>
+                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
+                        For support or feedback, please visit our Help Center in the Resources menu or contact us through the About Us page.
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- 2. FOUR FUNCTION CALCULATOR -->
