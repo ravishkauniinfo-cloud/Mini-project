@@ -133,8 +133,6 @@
                     </a>
                 </div>
             </li>
-
-            <li><a href="javascript:void(0)" class="nav-item" onclick="window.location.href='index.html'; setTimeout(() => document.getElementById('footer').scrollIntoView({behavior: 'smooth'}), 100);">Contact Us</a></li>
         </ul>
 
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
@@ -292,6 +290,66 @@
             </div>
         </section>
     </main>
+
+    <!-- FOOTER -->
+    <footer id="footer" style="background: var(--glass-panel); border-top: 1px solid var(--glass-border); padding: 2rem 2rem; margin-top: auto; z-index: 10;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <!-- Footer Content Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
+                <!-- Left Section: Brand -->
+                <div style="text-align: center;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-infinity" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">MathHub</h3>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; text-align: center;">
+                        Interactive mathematics and learning tools for modern enthusiasts.
+                    </p>
+                    <div class="footer-socials" style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="https://github.com/ravishkauniinfo-cloud/Mini-project.git" target="_blank" title="GitHub" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(100, 116, 139, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s ease;">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Middle Section: Contact & Support -->
+                <div>
+                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Contact & Support</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--btn-bg); border-radius: 10px; border: 1px solid var(--glass-border);">
+                     <i class="fa-solid fa-envelope" style="color: var(--primary); font-size: 1.2rem;"></i>
+                        <a href="mailto:ucsc.group13@gmail.com" style="color: var(--text-main); text-decoration: none; font-weight: 500;">ucsc.group13@gmail.com</a>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        Have questions or feedback? Let us know! We're here to help you learn and succeed.
+                    </p>
+                </div>
+
+                <!-- Right Section: Newsletter -->
+                <div>
+                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Stay Updated</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+                        Subscribe to our newsletter for the latest updates and features.
+                    </p>
+                    <form id="newsletter-form" style="display: flex; gap: 0.5rem; flex-direction: column;" onsubmit="handleNewsletterSubscribe(event)">
+                        <input type="email" id="newsletter-email" placeholder="Enter your email" required style="padding: 0.75rem; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--btn-bg); color: var(--text-main); font-size: 0.95rem;">
+                        <button type="submit" id="newsletter-btn" class="btn" style="padding: 0.75rem 1.5rem; font-weight: 600;">
+                            <i class="fa-solid fa-bell" style="margin-right: 0.5rem;"></i> Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div style="height: 1px; background: var(--glass-border); margin-bottom: 2rem;"></div>
+
+            <!-- Footer Bottom -->
+            <div style="text-align: center; ">
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                    &copy; 2026 MathHub. All rights reserved. Designed for interactive learning.
+                </p>
+            </div>
+        </div>
+    </footer>
 
 </body>
 </html>
