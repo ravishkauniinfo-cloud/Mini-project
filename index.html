@@ -107,7 +107,7 @@
             <li class="dropdown">
                 <a class="dropdown-toggle">Resources <i class="fa-solid fa-chevron-down" style="font-size: 0.7em;"></i></a>
                 <div class="dropdown-menu" style="min-width: 250px;">
-                    <a href="javascript:void(0)" onclick="navigateTo('page-about')">
+                    <a href="about-us.html">
                         <div class="dropdown-icon-box" style="background: rgba(100, 116, 139, 0.2); color: var(--text-muted);">
                             <i class="fa-solid fa-circle-info"></i>
                         </div>
@@ -151,6 +151,8 @@
                     </a>
                 </div>
             </li>
+
+            <li><a href="javascript:void(0)" class="nav-item" onclick="document.getElementById('footer').scrollIntoView({behavior: 'smooth'});">Contact Us</a></li>
         </ul>
 
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
@@ -258,8 +260,9 @@
         <section class="hero">
             <h1 class="hero-title animated-gradient-text">The Ultimate<br>Specification Library.</h1>
             <p>Your beautifully designed, all-in-one platform for solving standard arithmetic, complex algebraic equations, unit conversions, number systems, and matrix algebra natively.</p>
-            <div class="btn-group">
+            <div class="btn-group" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 50px;" onclick="navigateTo('calc-sci')">Start Calculating</button>
+                <button class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 50px;" onclick="window.location.href='ai-assistant.html'"><i class="fa-solid fa-robot" style="margin-right: 8px;"></i> AI Assistant</button>
             </div>
         </section>
         
@@ -275,9 +278,38 @@
             <div class="tool-card glass" onclick="navigateTo('calc-misc')"><i class="fa-solid fa-layer-group tool-icon" style="background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Misc Calculators</h3><p>Calculate BMI, Mortgage, and Compound Interest.</p></div>
         </section>
 
+        <!-- REVIEWS & FAQ BALANCED CONTAINER -->
+        <div class="reviews-faq-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1400px; margin: 5rem auto; padding: 0 2rem; align-items: start;">
+        
+        <!-- Reviews Section -->
+        <section class="reviews-section" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Community Reviews</h2>
+            <div class="review-form glass" style="padding: 2.5rem; border-radius: 24px; border: 1px solid var(--glass-border);">
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Share your feedback</h3>
+                <textarea id="review-text" placeholder="Tell us what you love or what we can improve..." rows="5" style="width: 100%; padding: 1rem; border-radius: 14px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); resize: vertical; font-family: 'Inter', sans-serif; backdrop-filter: blur(12px);"></textarea>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
+                    <input id="review-name" placeholder="Your name (optional)" style="flex: 1 1 150px; padding: 0.9rem 1rem; border-radius: 14px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-family: 'Inter', sans-serif; backdrop-filter: blur(12px);">
+                    <select id="review-rating" class="review-rating-select">
+                        <option value="5">★★★★★ 5</option>
+                        <option value="4">★★★★ 4</option>
+                        <option value="3">★★★ 3</option>
+                        <option value="2">★★ 2</option>
+                        <option value="1">★ 1</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 1.5rem; width: 100%; font-weight: 700; padding: 1rem;" onclick="submitReview()">Post Review</button>
+                <div id="review-error" style="color: var(--tertiary); margin-top: 0.8rem; display: none;"></div>
+            </div>
+            <div class="review-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div id="reviews-output" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Reviews will be rendered here -->
+                </div>
+            </div>
+        </section>
+
         <!-- FAQ Section -->
-        <section class="faq-section" style="max-width: 1000px; margin: 4rem auto; padding: 0 2rem;">
-            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 3rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>
+        <section class="faq-section" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>
             
             <div class="faq-container" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
@@ -326,7 +358,7 @@
                         <i class="fa-solid fa-chevron-down faq-arrow" style="color: var(--text-muted); transition: transform 0.3s ease;"></i>
                     </button>
                     <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6; display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0;">
-                        Currently, calculations are not saved automatically. We recommend copying important results or taking screenshots for your records.
+                        Yes! Your calculations are automatically saved to your history and can be accessed via the history icon.
                     </div>
                 </div>
                 
@@ -351,6 +383,7 @@
                 </div>
             </div>
         </section>
+        </div>
     </main>
 
     <!-- 2. FOUR FUNCTION CALCULATOR -->
@@ -1245,7 +1278,8 @@
                             <p style="color: var(--text-muted); line-height: 1.6;">Comprehensive guides on how to use each calculator and tool effectively.</p>
                         </div>
                         
-                        <div class="tool-card glass" onclick="navigateTo('page-about')" style="cursor: pointer; transition: transform 0.2s ease;">
+                        <a href="about-us.html" style="text-decoration: none;">
+                        <div class="tool-card glass" style="cursor: pointer; transition: transform 0.2s ease;">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
                                 <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981; width: 50px; height: 50px;">
                                     <i class="fa-solid fa-circle-info"></i>
@@ -1257,6 +1291,7 @@
                             </div>
                             <p style="color: var(--text-muted); line-height: 1.6;">Learn about the mission and features of the MathHub platform.</p>
                         </div>
+                        </a>
                         
                         <div class="tool-card glass" style="cursor: pointer; transition: transform 0.2s ease;">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
@@ -1326,13 +1361,64 @@
     </main>
 
     <!-- FOOTER -->
-    <footer>
-        <p>&copy; 2026 MathHub. Designed for interactive learning.</p>
-        <div class="footer-socials" style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
-            <a href="https://github.com/ravishkauniinfo-cloud/Mini-project.git" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
+    <footer id="footer" style="background: var(--glass-panel); border-top: 1px solid var(--glass-border); padding: 2rem 2rem; margin-top: auto; z-index: 10;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <!-- Footer Content Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
+                <!-- Left Section: Brand -->
+                <div style="text-align: center;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-infinity" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">MathHub</h3>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; text-align: center;">
+                        Interactive mathematics and learning tools for modern enthusiasts.
+                    </p>
+                    <div class="footer-socials" style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="https://github.com/ravishkauniinfo-cloud/Mini-project.git" target="_blank" title="GitHub" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(100, 116, 139, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s ease;">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Middle Section: Contact & Support -->
+                <div>
+                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Contact & Support</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--btn-bg); border-radius: 10px; border: 1px solid var(--glass-border);">
+                     <i class="fa-solid fa-envelope" style="color: var(--primary); font-size: 1.2rem;"></i>
+                        <a href="mailto:ucsc.group13@gmail.com" style="color: var(--text-main); text-decoration: none; font-weight: 500;">ucsc.group13@gmail.com</a>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        Have questions or feedback? Let us know! We're here to help you learn and succeed.
+                    </p>
+                </div>
+
+                <!-- Right Section: Newsletter -->
+                <div>
+                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Stay Updated</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+                        Subscribe to our newsletter for the latest updates and features.
+                    </p>
+                    <form id="newsletter-form" style="display: flex; gap: 0.5rem; flex-direction: column;" onsubmit="handleNewsletterSubscribe(event)">
+                        <input type="email" id="newsletter-email" placeholder="Enter your email" required style="padding: 0.75rem; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--btn-bg); color: var(--text-main); font-size: 0.95rem;">
+                        <button type="submit" id="newsletter-btn" class="btn" style="padding: 0.75rem 1.5rem; font-weight: 600;">
+                            <i class="fa-solid fa-bell" style="margin-right: 0.5rem;"></i> Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div style="height: 1px; background: var(--glass-border); margin-bottom: 2rem;"></div>
+
+            <!-- Footer Bottom -->
+            <div style="text-align: center; ">
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                    &copy; 2026 MathHub. All rights reserved. Designed for interactive learning.
+                </p>
+            </div>
         </div>
     </footer>
 
-    
 </body>
 </html>

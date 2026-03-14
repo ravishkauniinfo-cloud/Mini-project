@@ -82,6 +82,57 @@ let currentUser = null;
             }
         }
 
+        // --- AI CHATBOT MANAGER ---
+        const chatbotManager = {
+            isOpen: false,
+            
+            toggleChat() {
+                const chatWindow = document.getElementById('chat-window');
+                if (!chatWindow) return;
+                this.isOpen = !this.isOpen;
+                chatWindow.style.display = this.isOpen ? 'flex' : 'none';
+                if (this.isOpen) document.getElementById('chat-input').focus();
+            },
+
+            sendMessage() {
+                const input = document.getElementById('chat-input');
+                if (!input) return;
+                const text = input.value.trim();
+                if (!text) return;
+
+                this.addMessage(text, 'user');
+                input.value = '';
+
+                // Mock AI response delay
+                setTimeout(() => this.handleResponse(text), 600);
+            },
+
+            sendSuggestedMessage(message) {
+                this.addMessage(message, 'user');
+                setTimeout(() => this.handleResponse(message), 600);
+            },
+
+            addMessage(text, sender) {
+                const container = document.getElementById('chat-messages');
+                if (!container) return;
+                const msg = document.createElement('div');
+                msg.className = sender === 'ai' ? 'ai-msg' : 'user-msg';
+                msg.textContent = text;
+                container.appendChild(msg);
+                container.scrollTop = container.scrollHeight;
+            },
+
+            handleResponse(query) {
+                const q = query.toLowerCase();
+                let response = "I'm here to help! Ask me about our Math tools or Student Toolkit features.";
+                if (q.includes('hello') || q.includes('hi')) response = "Hello! I'm your MathHub assistant. How can I help you today?";
+                else if (q.includes('graph')) response = "The Graphing Calculator is perfect for visualizing functions and equations.";
+                else if (q.includes('gpa')) response = "Our GPA Calculator in the Student Toolkit makes tracking grades easy.";
+                else if (q.includes('history')) response = "Your calculation history is saved automatically and can be accessed via the history icon.";
+                this.addMessage(response, 'ai');
+            }
+        };
+
         function updateNavAuth() {
             const container = document.getElementById('nav-auth-container');
             if (currentUser) {
@@ -330,6 +381,124 @@ let currentUser = null;
                 }
             }
         };
+
+        // --- REVIEW / FEEDBACK MANAGER ---
+        const reviewManager = {
+            storageKey: 'mathHubReviews',
+            reviews: [],
+
+            init() {
+                this.loadReviews();
+                this.renderReviews();
+            },
+
+            loadReviews() {
+                try {
+                    const stored = localStorage.getItem(this.storageKey);
+                    if (stored) {
+                        this.reviews = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.warn('Failed to load reviews:', e);
+                    this.reviews = [];
+                }
+            },
+
+            saveReviews() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.reviews));
+                } catch (e) {
+                    console.warn('Failed to save reviews:', e);
+                }
+            },
+
+            addReview(review) {
+                this.reviews.unshift(review);
+                if (this.reviews.length > 50) {
+                    this.reviews = this.reviews.slice(0, 50);
+                }
+                this.saveReviews();
+                this.renderReviews();
+            },
+
+            deleteReview(id) {
+                this.reviews = this.reviews.filter(r => r.id !== id);
+                this.saveReviews();
+                this.renderReviews();
+            },
+
+            formatTimestamp(ts) {
+                const date = new Date(ts);
+                return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + ' • ' + date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            },
+
+            renderReviews() {
+                const output = document.getElementById('reviews-output');
+                if (!output) return;
+
+                if (this.reviews.length === 0) {
+                    output.innerHTML = `
+                        <div class="glass" style="padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
+                            <i class="fa-solid fa-comment-dots" style="font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.7;"></i>
+                            <p>No reviews yet. Be the first to share one!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                output.innerHTML = this.reviews.map(review => {
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                    const displayName = review.name ? review.name : 'Anonymous';
+                    return `
+                        <div class="glass" style="padding: 1.5rem; border-radius: 18px; border: 1px solid var(--glass-border);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem;">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem;">${displayName}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">${this.formatTimestamp(review.timestamp)}</div>
+                                </div>
+                                <div style="font-size: 0.95rem; color: var(--secondary); letter-spacing: 0.05em;">${stars}</div>
+                            </div>
+                            <div style="color: var(--text-main); line-height: 1.5;">${review.text}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        };
+
+        function submitReview() {
+            const textEl = document.getElementById('review-text');
+            const nameEl = document.getElementById('review-name');
+            const ratingEl = document.getElementById('review-rating');
+            const errorEl = document.getElementById('review-error');
+
+            if (!textEl || !ratingEl || !errorEl) return;
+
+            const text = textEl.value.trim();
+            const rating = Number(ratingEl.value);
+            const name = nameEl && nameEl.value.trim();
+
+            if (!text) {
+                errorEl.textContent = 'Please enter a short review before posting.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const review = {
+                id: Date.now(),
+                name: name || (currentUser ? currentUser.name : ''),
+                rating: rating || 5,
+                text: text,
+                timestamp: new Date().toISOString(),
+            };
+
+            reviewManager.addReview(review);
+
+            // Clear form
+            textEl.value = '';
+            if (nameEl) nameEl.value = '';
+            ratingEl.value = '5';
+            errorEl.style.display = 'none';
+        }
 
         // --- ROUTING ---
         function navigateTo(pageId) {
@@ -1480,6 +1649,13 @@ let currentUser = null;
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize calculation history
             calcHistory.init();
+            reviewManager.init();
             
+            // Focus AI chat input if on the assistant page
+            if (window.location.pathname.includes('ai-assistant.html')) {
+                const input = document.getElementById('chat-input');
+                if (input) input.focus();
+            }
+
             if(document.getElementById('calc-sci').classList.contains('active')) sciApp.init();
         });
