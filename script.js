@@ -396,21 +396,88 @@ let currentUser = null;
                 }
 
                 output.innerHTML = this.reviews.map(review => {
-                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
                     const displayName = review.name ? review.name : 'Anonymous';
+                    const isOwner = currentUser && currentUser.name.toLowerCase() === displayName.toLowerCase();
+                    const timestamp = new Date(review.timestamp);
+                    const formattedDate = timestamp.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    const formattedTime = timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    
                     return `
-                        <div class="glass" style="padding: 1.5rem; border-radius: 18px; border: 1px solid var(--glass-border);">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem;">
-                                <div>
-                                    <div style="font-weight: 700; font-size: 1rem;">${displayName}</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">${this.formatTimestamp(review.timestamp)}</div>
-                                </div>
-                                <div style="font-size: 0.95rem; color: var(--secondary); letter-spacing: 0.05em;">${stars}</div>
+                        <div style="background: linear-gradient(135deg, rgba(147, 197, 253, 0.4), rgba(219, 178, 255, 0.3)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 2rem; transition: all 0.3s ease; position: relative; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);" class="review-item" data-review-id="${review.id}">
+                            
+                            ${isOwner ? `
+                            <div style="position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: 0.5rem; opacity: 0; transition: all 0.3s ease; z-index: 10;" class="review-actions">
+                                <button onclick="reviewManager.editReview(${review.id})" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.2)); border: 1.5px solid rgba(59, 130, 246, 0.5); color: #3b82f6; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;" onmouseover="this.style.background='rgba(59, 130, 246, 0.45)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.3)'; this.style.transform='scale(1)'" title="Edit Review"><i class="fa-solid fa-edit"></i></button>
+                                <button onclick="reviewManager.deleteReview(${review.id})" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(244, 63, 94, 0.2)); border: 1.5px solid rgba(239, 68, 68, 0.5); color: #ef4444; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.45)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.3)'; this.style.transform='scale(1)'" title="Delete Review"><i class="fa-solid fa-trash-alt"></i></button>
                             </div>
-                            <div style="color: var(--text-main); line-height: 1.5;">${review.text}</div>
+                            ` : ''}
+                            
+                            <!-- Header Section -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: 700; color: #1f2937; margin-bottom: 0.4rem;">${displayName}</h3>
+                                    <p style="margin: 0; font-size: 0.9rem; color: #6b7280;">${formattedDate} • ${formattedTime}</p>
+                                </div>
+                                <div style="font-size: 1.2rem; color: #a855f7; letter-spacing: 2px; font-weight: 700;">${'★'.repeat(review.rating)}</div>
+                            </div>
+                            
+                            <!-- Review Text Section -->
+                            <div style="font-size: 1rem; color: #374151; line-height: 1.6; letter-spacing: 0.3px; font-weight: 500;">
+                                ${review.text}
+                            </div>
                         </div>
                     `;
                 }).join('');
+
+                // Add hover effect for action buttons
+                document.querySelectorAll('.review-item').forEach(item => {
+                    const actions = item.querySelector('.review-actions');
+                    
+                    item.addEventListener('mouseover', function() {
+                        this.style.transform = 'translateY(-4px)';
+                        if (actions) {
+                            actions.style.opacity = '1';
+                        }
+                    });
+                    
+                    item.addEventListener('mouseout', function() {
+                        this.style.transform = 'translateY(0)';
+                        if (actions) {
+                            actions.style.opacity = '0';
+                        }
+                    });
+                });
+            },
+
+            editReview(id) {
+                const review = this.reviews.find(r => r.id === id);
+                if (!review) {
+                    console.error('Review not found');
+                    return;
+                }
+
+                const textEl = document.getElementById('review-text');
+                const ratingEl = document.getElementById('review-rating');
+                const nameEl = document.getElementById('review-name');
+                
+                if (!textEl || !ratingEl || !nameEl) {
+                    console.error('Form elements not found');
+                    return;
+                }
+
+                // Fill the form with current review data
+                textEl.value = review.text;
+                ratingEl.value = review.rating;
+                nameEl.value = review.name || '';
+
+                // Store the ID for update
+                textEl.dataset.editId = id;
+
+                // Scroll to the form
+                setTimeout(() => {
+                    textEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    textEl.focus();
+                }, 100);
             }
         };
 
@@ -432,15 +499,31 @@ let currentUser = null;
                 return;
             }
 
-            const review = {
-                id: Date.now(),
-                name: name || (currentUser ? currentUser.name : ''),
-                rating: rating || 5,
-                text: text,
-                timestamp: new Date().toISOString(),
-            };
-
-            reviewManager.addReview(review);
+            // Check if editing existing review
+            const editId = textEl.dataset.editId;
+            if (editId) {
+                // Update existing review
+                const reviewIndex = reviewManager.reviews.findIndex(r => r.id === Number(editId));
+                if (reviewIndex !== -1) {
+                    reviewManager.reviews[reviewIndex].text = text;
+                    reviewManager.reviews[reviewIndex].rating = rating;
+                    reviewManager.reviews[reviewIndex].name = name;
+                    reviewManager.reviews[reviewIndex].timestamp = new Date().toISOString();
+                    reviewManager.saveReviews();
+                    reviewManager.renderReviews();
+                    delete textEl.dataset.editId;
+                }
+            } else {
+                // Create new review
+                const review = {
+                    id: Date.now(),
+                    name: name || (currentUser ? currentUser.name : ''),
+                    rating: rating || 5,
+                    text: text,
+                    timestamp: new Date().toISOString(),
+                };
+                reviewManager.addReview(review);
+            }
 
             // Clear form
             textEl.value = '';

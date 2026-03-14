@@ -534,6 +534,240 @@
             .bit-cell { width: 24px; height: 28px; font-size: 0.95rem; }
             .converter-container { flex-direction: column; }
             .unit-list-box { height: 180px; }
+            .reviews-faq-container { grid-template-columns: 1fr !important; gap: 2rem !important; }
+        }
+
+        /* --- REVIEWS & FAQ BALANCED LAYOUT --- */
+        .reviews-faq-container {
+            width: 100%;
+        }
+
+        .reviews-section, .faq-section {
+            border-radius: 24px;
+            padding: 2.5rem;
+        }
+
+        .review-form {
+            transition: all 0.3s ease;
+        }
+
+        .review-form:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .faq-item {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .faq-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .faq-question {
+            transition: all 0.2s ease;
+        }
+
+        .faq-question:hover {
+            color: var(--primary);
+        }
+
+        .faq-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        .review-list > div:not(:first-child) {
+            background: var(--glass-panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .review-list > div:not(:first-child):hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- ANIMATED REVIEW STYLES --- */
+        @keyframes gradientBorderMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes textGradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes slideInReview {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(0, 212, 255, 0.6), 0 12px 30px rgba(0, 212, 255, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            }
+        }
+
+        .review-item {
+            animation: slideInReview 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .review-item:hover {
+            animation: glowPulse 1.5s ease-in-out infinite;
+        }
+
+        .review-gradient-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(90deg, #00d4ff, #0099ff, #6366f1, #a855f7, #ec4899, #00d4ff);
+            background-size: 200% 200%;
+            animation: gradientBorderMove 4s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .review-gradient-text {
+            background: linear-gradient(90deg, #00d4ff, #0099ff, #6366f1, #a855f7, #ec4899, #00d4ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textGradientMove 3s ease infinite;
+            font-weight: 700;
+        }
+
+        /* --- REVIEW RATING SELECT STYLING --- */
+        .review-rating-select {
+            flex: 0 0 140px;
+            padding: 0.9rem 1rem;
+            border-radius: 14px;
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(232, 231, 255, 0.1));
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1.2em 1.2em;
+            padding-right: 2.5rem;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+        }
+
+        .review-rating-select:hover {
+            border-color: #a855f7;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(232, 231, 255, 0.2));
+            box-shadow: 0 6px 16px rgba(168, 85, 247, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .review-rating-select:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2), 0 6px 16px rgba(168, 85, 247, 0.25);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(232, 231, 255, 0.25));
+        }
+
+        .review-rating-select option {
+            background: #ffffff;
+            color: var(--text-main);
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .review-rating-select option:hover {
+            background: linear-gradient(135deg, #e8e7ff, #f3f0ff);
+            color: #a855f7;
+        }
+
+        .review-rating-select option:checked {
+            background: linear-gradient(135deg, #d8aef7, #c4b5fd);
+            color: #6d28d9;
+            font-weight: 700;
+        }
+
+        [data-theme="dark"] .review-rating-select {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(99, 102, 241, 0.1));
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        [data-theme="dark"] .review-rating-select option {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .review-rating-select option:checked {
+            background: linear-gradient(135deg, #6d28d9, #7c3aed);
+            color: #ffffff;
         }/ *   - - -   C A L C U L A T I O N   H I S T O R Y   P A N E L   - - -   * / 
  . h i s t o r y - p a n e l   { 
          b a c k d r o p - f i l t e r :   b l u r ( 2 0 p x ) ; 
@@ -572,5 +806,6 @@
          f o n t - w e i g h t :   6 0 0 ; 
          b o r d e r :   2 p x   s o l i d   v a r ( - - b g - b a s e ) ; 
          b o x - s h a d o w :   0   2 p x   4 p x   r g b a ( 0 , 0 , 0 , 0 . 2 ) ; 
- }  
+ } 
+ 
  
