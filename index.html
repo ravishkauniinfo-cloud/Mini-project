@@ -275,6 +275,35 @@
             <div class="tool-card glass" onclick="navigateTo('calc-misc')"><i class="fa-solid fa-layer-group tool-icon" style="background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i><h3>Misc Calculators</h3><p>Calculate BMI, Mortgage, and Compound Interest.</p></div>
         </section>
 
+        <!-- Reviews Section -->
+        <section class="reviews-section" style="max-width: 1000px; margin: 4rem auto; padding: 0 2rem;">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Community Reviews</h2>
+            <div class="reviews-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                <div class="review-form glass" style="padding: 2rem; border-radius: 20px; border: 1px solid var(--glass-border);">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Share your feedback</h3>
+                    <textarea id="review-text" placeholder="Tell us what you love or what we can improve..." rows="5" style="width: 100%; padding: 1rem; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.6); background: rgba(255,255,255,0.4); color: var(--text-main); resize: vertical;"></textarea>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+                        <input id="review-name" placeholder="Your name (optional)" style="flex: 1 1 210px; padding: 0.9rem 1rem; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.6); background: rgba(255,255,255,0.4); color: var(--text-main);">
+                        <select id="review-rating" style="flex: 0 0 140px; padding: 0.9rem 1rem; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.6); background: rgba(255,255,255,0.4); color: var(--text-main);">
+                            <option value="5">★★★★★ 5</option>
+                            <option value="4">★★★★ 4</option>
+                            <option value="3">★★★ 3</option>
+                            <option value="2">★★ 2</option>
+                            <option value="1">★ 1</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 1.3rem; width: 100%;" onclick="submitReview()">Post Review</button>
+                    <div id="review-error" style="color: var(--tertiary); margin-top: 0.8rem; display: none;"></div>
+                </div>
+                <div class="review-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Recent reviews</h3>
+                    <div id="reviews-output" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Reviews will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- FAQ Section -->
         <section class="faq-section" style="max-width: 1000px; margin: 4rem auto; padding: 0 2rem;">
             <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 3rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>

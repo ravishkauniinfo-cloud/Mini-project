@@ -331,6 +331,124 @@ let currentUser = null;
             }
         };
 
+        // --- REVIEW / FEEDBACK MANAGER ---
+        const reviewManager = {
+            storageKey: 'mathHubReviews',
+            reviews: [],
+
+            init() {
+                this.loadReviews();
+                this.renderReviews();
+            },
+
+            loadReviews() {
+                try {
+                    const stored = localStorage.getItem(this.storageKey);
+                    if (stored) {
+                        this.reviews = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.warn('Failed to load reviews:', e);
+                    this.reviews = [];
+                }
+            },
+
+            saveReviews() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.reviews));
+                } catch (e) {
+                    console.warn('Failed to save reviews:', e);
+                }
+            },
+
+            addReview(review) {
+                this.reviews.unshift(review);
+                if (this.reviews.length > 50) {
+                    this.reviews = this.reviews.slice(0, 50);
+                }
+                this.saveReviews();
+                this.renderReviews();
+            },
+
+            deleteReview(id) {
+                this.reviews = this.reviews.filter(r => r.id !== id);
+                this.saveReviews();
+                this.renderReviews();
+            },
+
+            formatTimestamp(ts) {
+                const date = new Date(ts);
+                return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + ' • ' + date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            },
+
+            renderReviews() {
+                const output = document.getElementById('reviews-output');
+                if (!output) return;
+
+                if (this.reviews.length === 0) {
+                    output.innerHTML = `
+                        <div class="glass" style="padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
+                            <i class="fa-solid fa-comment-dots" style="font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.7;"></i>
+                            <p>No reviews yet. Be the first to share one!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                output.innerHTML = this.reviews.map(review => {
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                    const displayName = review.name ? review.name : 'Anonymous';
+                    return `
+                        <div class="glass" style="padding: 1.5rem; border-radius: 18px; border: 1px solid var(--glass-border);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem;">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem;">${displayName}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">${this.formatTimestamp(review.timestamp)}</div>
+                                </div>
+                                <div style="font-size: 0.95rem; color: var(--secondary); letter-spacing: 0.05em;">${stars}</div>
+                            </div>
+                            <div style="color: var(--text-main); line-height: 1.5;">${review.text}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        };
+
+        function submitReview() {
+            const textEl = document.getElementById('review-text');
+            const nameEl = document.getElementById('review-name');
+            const ratingEl = document.getElementById('review-rating');
+            const errorEl = document.getElementById('review-error');
+
+            if (!textEl || !ratingEl || !errorEl) return;
+
+            const text = textEl.value.trim();
+            const rating = Number(ratingEl.value);
+            const name = nameEl && nameEl.value.trim();
+
+            if (!text) {
+                errorEl.textContent = 'Please enter a short review before posting.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const review = {
+                id: Date.now(),
+                name: name || (currentUser ? currentUser.name : ''),
+                rating: rating || 5,
+                text: text,
+                timestamp: new Date().toISOString(),
+            };
+
+            reviewManager.addReview(review);
+
+            // Clear form
+            textEl.value = '';
+            if (nameEl) nameEl.value = '';
+            ratingEl.value = '5';
+            errorEl.style.display = 'none';
+        }
+
         // --- ROUTING ---
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1480,6 +1598,7 @@ let currentUser = null;
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize calculation history
             calcHistory.init();
+            reviewManager.init();
             
             if(document.getElementById('calc-sci').classList.contains('active')) sciApp.init();
         });
