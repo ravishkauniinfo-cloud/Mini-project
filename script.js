@@ -82,57 +82,6 @@ let currentUser = null;
             }
         }
 
-        // --- AI CHATBOT MANAGER ---
-        const chatbotManager = {
-            isOpen: false,
-            
-            toggleChat() {
-                const chatWindow = document.getElementById('chat-window');
-                if (!chatWindow) return;
-                this.isOpen = !this.isOpen;
-                chatWindow.style.display = this.isOpen ? 'flex' : 'none';
-                if (this.isOpen) document.getElementById('chat-input').focus();
-            },
-
-            sendMessage() {
-                const input = document.getElementById('chat-input');
-                if (!input) return;
-                const text = input.value.trim();
-                if (!text) return;
-
-                this.addMessage(text, 'user');
-                input.value = '';
-
-                // Mock AI response delay
-                setTimeout(() => this.handleResponse(text), 600);
-            },
-
-            sendSuggestedMessage(message) {
-                this.addMessage(message, 'user');
-                setTimeout(() => this.handleResponse(message), 600);
-            },
-
-            addMessage(text, sender) {
-                const container = document.getElementById('chat-messages');
-                if (!container) return;
-                const msg = document.createElement('div');
-                msg.className = sender === 'ai' ? 'ai-msg' : 'user-msg';
-                msg.textContent = text;
-                container.appendChild(msg);
-                container.scrollTop = container.scrollHeight;
-            },
-
-            handleResponse(query) {
-                const q = query.toLowerCase();
-                let response = "I'm here to help! Ask me about our Math tools or Student Toolkit features.";
-                if (q.includes('hello') || q.includes('hi')) response = "Hello! I'm your MathHub assistant. How can I help you today?";
-                else if (q.includes('graph')) response = "The Graphing Calculator is perfect for visualizing functions and equations.";
-                else if (q.includes('gpa')) response = "Our GPA Calculator in the Student Toolkit makes tracking grades easy.";
-                else if (q.includes('history')) response = "Your calculation history is saved automatically and can be accessed via the history icon.";
-                this.addMessage(response, 'ai');
-            }
-        };
-
         function updateNavAuth() {
             const container = document.getElementById('nav-auth-container');
             if (currentUser) {
