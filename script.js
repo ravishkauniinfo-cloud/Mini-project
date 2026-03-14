@@ -82,6 +82,57 @@ let currentUser = null;
             }
         }
 
+        // --- AI CHATBOT MANAGER ---
+        const chatbotManager = {
+            isOpen: false,
+            
+            toggleChat() {
+                const chatWindow = document.getElementById('chat-window');
+                if (!chatWindow) return;
+                this.isOpen = !this.isOpen;
+                chatWindow.style.display = this.isOpen ? 'flex' : 'none';
+                if (this.isOpen) document.getElementById('chat-input').focus();
+            },
+
+            sendMessage() {
+                const input = document.getElementById('chat-input');
+                if (!input) return;
+                const text = input.value.trim();
+                if (!text) return;
+
+                this.addMessage(text, 'user');
+                input.value = '';
+
+                // Mock AI response delay
+                setTimeout(() => this.handleResponse(text), 600);
+            },
+
+            sendSuggestedMessage(message) {
+                this.addMessage(message, 'user');
+                setTimeout(() => this.handleResponse(message), 600);
+            },
+
+            addMessage(text, sender) {
+                const container = document.getElementById('chat-messages');
+                if (!container) return;
+                const msg = document.createElement('div');
+                msg.className = sender === 'ai' ? 'ai-msg' : 'user-msg';
+                msg.textContent = text;
+                container.appendChild(msg);
+                container.scrollTop = container.scrollHeight;
+            },
+
+            handleResponse(query) {
+                const q = query.toLowerCase();
+                let response = "I'm here to help! Ask me about our Math tools or Student Toolkit features.";
+                if (q.includes('hello') || q.includes('hi')) response = "Hello! I'm your MathHub assistant. How can I help you today?";
+                else if (q.includes('graph')) response = "The Graphing Calculator is perfect for visualizing functions and equations.";
+                else if (q.includes('gpa')) response = "Our GPA Calculator in the Student Toolkit makes tracking grades easy.";
+                else if (q.includes('history')) response = "Your calculation history is saved automatically and can be accessed via the history icon.";
+                this.addMessage(response, 'ai');
+            }
+        };
+
         function updateNavAuth() {
             const container = document.getElementById('nav-auth-container');
             if (currentUser) {
@@ -330,293 +381,6 @@ let currentUser = null;
                 }
             }
         };
-
-        // --- REVIEW / FEEDBACK MANAGER ---
-        const reviewManager = {
-            storageKey: 'mathHubReviews',
-            reviews: [],
-            showArchived: false,
-
-            init() {
-                this.loadReviews();
-                this.renderReviews();
-            },
-
-            loadReviews() {
-                try {
-                    const stored = localStorage.getItem(this.storageKey);
-                    if (stored) {
-                        this.reviews = JSON.parse(stored);
-                    }
-                } catch (e) {
-                    console.warn('Failed to load reviews:', e);
-                    this.reviews = [];
-                }
-            },
-
-            saveReviews() {
-                try {
-                    localStorage.setItem(this.storageKey, JSON.stringify(this.reviews));
-                } catch (e) {
-                    console.warn('Failed to save reviews:', e);
-                }
-            },
-
-            addReview(review) {
-                review.archived = false;
-                this.reviews.unshift(review);
-                if (this.reviews.length > 100) {
-                    this.reviews = this.reviews.slice(0, 100);
-                }
-                this.saveReviews();
-                this.renderReviews();
-            },
-
-            deleteReview(id) {
-                this.reviews = this.reviews.filter(r => r.id !== id);
-                this.saveReviews();
-                this.renderReviews();
-            },
-
-            archiveReview(id) {
-                const review = this.reviews.find(r => r.id === id);
-                if (review) {
-                    review.archived = true;
-                    this.saveReviews();
-                    this.renderReviews();
-                }
-            },
-
-            unarchiveReview(id) {
-                const review = this.reviews.find(r => r.id === id);
-                if (review) {
-                    review.archived = false;
-                    this.reviews.splice(this.reviews.indexOf(review), 1);
-                    this.reviews.unshift(review);
-                    this.saveReviews();
-                    this.renderReviews();
-                }
-            },
-
-            toggleArchiveView() {
-                this.showArchived = !this.showArchived;
-                this.renderReviews();
-            },
-
-            formatTimestamp(ts) {
-                const date = new Date(ts);
-                return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + ' • ' + date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-            },
-
-            renderReviews() {
-                const output = document.getElementById('reviews-output');
-                if (!output) return;
-
-                // Filter reviews based on archive view
-                const filteredReviews = this.reviews.filter(r => 
-                    this.showArchived ? r.archived : !r.archived
-                );
-
-                const activeCount = this.reviews.filter(r => !r.archived).length;
-                const archivedCount = this.reviews.filter(r => r.archived).length;
-
-                let html = '';
-
-                // Add archive toggle if there are any reviews
-                if (this.reviews.length > 0) {
-                    html += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1rem; background: var(--glass-panel); border-radius: 12px; border: 1px solid var(--glass-border);">
-                            <div style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">
-                                <span style="color: var(--text-main);">${activeCount}</span> Active
-                                ${archivedCount > 0 ? `<span style="margin: 0 1rem;">•</span><span style="color: var(--text-main);">${archivedCount}</span> Archived` : ''}
-                            </div>
-                            ${archivedCount > 0 ? `
-                                <button onclick="reviewManager.toggleArchiveView()" style="
-                                    background: ${this.showArchived ? 'var(--primary)' : 'transparent'};
-                                    border: 2px solid ${this.showArchived ? 'transparent' : 'var(--primary)'};
-                                    color: ${this.showArchived ? 'white' : 'var(--primary)'};
-                                    padding: 0.6rem 1.2rem;
-                                    border-radius: 10px;
-                                    cursor: pointer;
-                                    font-weight: 700;
-                                    font-size: 0.9rem;
-                                    transition: all 0.3s ease;
-                                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                    <i class="fa-solid ${this.showArchived ? 'fa-inbox' : 'fa-archive'}" style="margin-right: 0.5rem;"></i>
-                                    ${this.showArchived ? 'Show Active' : 'View Archived'}
-                                </button>
-                            ` : ''}
-                        </div>
-                    `;
-                }
-
-                if (filteredReviews.length === 0) {
-                    if (this.showArchived) {
-                        html += `
-                            <div class="glass" style="padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
-                                <i class="fa-solid fa-archive" style="font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.7;"></i>
-                                <p>No archived reviews. All feedback is active!</p>
-                            </div>
-                        `;
-                    } else {
-                        html += `
-                            <div class="glass" style="padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
-                                <i class="fa-solid fa-comment-dots" style="font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.7;"></i>
-                                <p>No reviews yet. Be the first to share one!</p>
-                            </div>
-                        `;
-                    }
-                } else {
-                    html += filteredReviews.map(review => {
-                        const displayName = review.name ? review.name : 'Anonymous';
-                        const isOwner = currentUser && currentUser.name.toLowerCase() === displayName.toLowerCase();
-                        const timestamp = new Date(review.timestamp);
-                        const formattedDate = timestamp.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                        const formattedTime = timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-                        
-                        const bgColor = review.archived 
-                            ? 'linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(203, 213, 225, 0.15))'
-                            : 'linear-gradient(135deg, rgba(147, 197, 253, 0.4), rgba(219, 178, 255, 0.3))';
-                        
-                        return `
-                            <div style="background: ${bgColor}; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 2rem; transition: all 0.3s ease; position: relative; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); ${review.archived ? 'opacity: 0.75;' : ''}" class="review-item" data-review-id="${review.id}">
-                                
-                                ${review.archived ? `
-                                    <div style="position: absolute; top: 1rem; left: 1rem; background: rgba(148, 163, 184, 0.4); color: var(--text-muted); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        <i class="fa-solid fa-archive" style="margin-right: 0.4rem;"></i>Archived
-                                    </div>
-                                ` : ''}
-                                
-                                ${isOwner ? `
-                                <div style="position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: 0.5rem; opacity: 0; transition: all 0.3s ease; z-index: 10; ${review.archived ? 'opacity: 0.8;' : ''}" class="review-actions">
-                                    <button onclick="reviewManager.editReview(${review.id})" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.2)); border: 1.5px solid rgba(59, 130, 246, 0.5); color: #3b82f6; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;" onmouseover="this.style.background='rgba(59, 130, 246, 0.45)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.3)'; this.style.transform='scale(1)'" title="Edit Review"><i class="fa-solid fa-edit"></i></button>
-                                    <button onclick="reviewManager.${review.archived ? 'unarchiveReview' : 'archiveReview'}(${review.id})" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.2)); border: 1.5px solid rgba(168, 85, 247, 0.5); color: #a855f7; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;" onmouseover="this.style.background='rgba(168, 85, 247, 0.45)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(168, 85, 247, 0.3)'; this.style.transform='scale(1)'" title="${review.archived ? 'Unarchive Review' : 'Archive Review'}"><i class="fa-solid fa-${review.archived ? 'inbox' : 'archive'}"></i></button>
-                                    <button onclick="reviewManager.deleteReview(${review.id})" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(244, 63, 94, 0.2)); border: 1.5px solid rgba(239, 68, 68, 0.5); color: #ef4444; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.45)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.3)'; this.style.transform='scale(1)'" title="Delete Review"><i class="fa-solid fa-trash-alt"></i></button>
-                                </div>
-                                ` : ''}
-                                
-                                <!-- Header Section -->
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; ${isOwner ? 'padding-right: 8rem;' : ''}">
-                                    <div style="flex: 1;">
-                                        <h3 style="margin: 0; font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">${displayName}</h3>
-                                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">${formattedDate} • ${formattedTime}</p>
-                                    </div>
-                                    <div style="font-size: 1.2rem; color: #a855f7; letter-spacing: 2px; font-weight: 700;">${'★'.repeat(review.rating)}</div>
-                                </div>
-                                
-                                <!-- Review Text Section -->
-                                <div style="font-size: 1rem; color: var(--text-main); line-height: 1.6; letter-spacing: 0.3px; font-weight: 500;">
-                                    ${review.text}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-
-                output.innerHTML = html;
-
-                // Add hover effect for action buttons
-                document.querySelectorAll('.review-item').forEach(item => {
-                    const actions = item.querySelector('.review-actions');
-                    
-                    item.addEventListener('mouseover', function() {
-                        this.style.transform = 'translateY(-4px)';
-                        if (actions) {
-                            actions.style.opacity = '1';
-                        }
-                    });
-                    
-                    item.addEventListener('mouseout', function() {
-                        this.style.transform = 'translateY(0)';
-                        if (actions) {
-                            actions.style.opacity = this.querySelector('[data-review-id]').getAttribute('data-archived') === 'true' ? '0.8' : '0';
-                        }
-                    });
-                });
-            },
-
-            editReview(id) {
-                const review = this.reviews.find(r => r.id === id);
-                if (!review) {
-                    console.error('Review not found');
-                    return;
-                }
-
-                const textEl = document.getElementById('review-text');
-                const ratingEl = document.getElementById('review-rating');
-                const nameEl = document.getElementById('review-name');
-                
-                if (!textEl || !ratingEl || !nameEl) {
-                    console.error('Form elements not found');
-                    return;
-                }
-
-                // Fill the form with current review data
-                textEl.value = review.text;
-                ratingEl.value = review.rating;
-                nameEl.value = review.name || '';
-
-                // Store the ID for update
-                textEl.dataset.editId = id;
-
-                // Scroll to the form
-                setTimeout(() => {
-                    textEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    textEl.focus();
-                }, 100);
-            }
-        };
-
-        function submitReview() {
-            const textEl = document.getElementById('review-text');
-            const nameEl = document.getElementById('review-name');
-            const ratingEl = document.getElementById('review-rating');
-            const errorEl = document.getElementById('review-error');
-
-            if (!textEl || !ratingEl || !errorEl) return;
-
-            const text = textEl.value.trim();
-            const rating = Number(ratingEl.value);
-            const name = nameEl && nameEl.value.trim();
-
-            if (!text) {
-                errorEl.textContent = 'Please enter a short review before posting.';
-                errorEl.style.display = 'block';
-                return;
-            }
-
-            // Check if editing existing review
-            const editId = textEl.dataset.editId;
-            if (editId) {
-                // Update existing review
-                const reviewIndex = reviewManager.reviews.findIndex(r => r.id === Number(editId));
-                if (reviewIndex !== -1) {
-                    reviewManager.reviews[reviewIndex].text = text;
-                    reviewManager.reviews[reviewIndex].rating = rating;
-                    reviewManager.reviews[reviewIndex].name = name;
-                    reviewManager.reviews[reviewIndex].timestamp = new Date().toISOString();
-                    reviewManager.saveReviews();
-                    reviewManager.renderReviews();
-                    delete textEl.dataset.editId;
-                }
-            } else {
-                // Create new review
-                const review = {
-                    id: Date.now(),
-                    name: name || (currentUser ? currentUser.name : ''),
-                    rating: rating || 5,
-                    text: text,
-                    timestamp: new Date().toISOString(),
-                };
-                reviewManager.addReview(review);
-            }
-
-            // Clear form
-            textEl.value = '';
-            if (nameEl) nameEl.value = '';
-            ratingEl.value = '5';
-            errorEl.style.display = 'none';
-        }
 
         // --- ROUTING ---
         function navigateTo(pageId) {
@@ -1869,7 +1633,6 @@ let currentUser = null;
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize calculation history
             calcHistory.init();
-            reviewManager.init();
             
             if(document.getElementById('calc-sci').classList.contains('active')) sciApp.init();
         });
