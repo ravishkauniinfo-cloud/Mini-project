@@ -214,7 +214,7 @@
         .btn-back:hover { background: var(--btn-hover); transform: translateX(-3px); }
 
         /* --- PAGE ROUTING --- */
-        .page { display: none; flex: 1; padding: 7rem 2rem 2rem; animation: fadeIn 0.4s ease; z-index: 10;}
+        .page { display: none; flex: 1; padding: 7rem 2rem 2rem; animation: fadeIn 0.4s ease; z-index: 10; overflow-y: auto; min-height: 100vh;}
         .page.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 

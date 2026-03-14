@@ -634,12 +634,12 @@ let currentUser = null;
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
             // Initialization triggers for advanced tools
-            if(pageId === 'calc-graph') { setTimeout(() => graphApp.init(), 50); } 
-            if(pageId === 'calc-matrix') matrixApp.init();
-            if(pageId === 'calc-sci') sciApp.init();
-            if(pageId === 'calc-num-sys') { setTimeout(() => numSysApp.init(), 50); }
-            if(pageId === 'calc-converter') { converterApp.init(); }
-            if(pageId === 'calc-misc') { miscApp.init(); }
+            if(pageId === 'calc-graph') { setTimeout(() => { try { graphApp.init(); } catch(e) { console.error('Graph init error:', e); } }, 100); } 
+            if(pageId === 'calc-matrix') { try { matrixApp.init(); } catch(e) { console.error('Matrix init error:', e); } }
+            if(pageId === 'calc-sci') { try { sciApp.init(); } catch(e) { console.error('Sci init error:', e); } }
+            if(pageId === 'calc-num-sys') { setTimeout(() => { try { numSysApp.init(); } catch(e) { console.error('NumSys init error:', e); } }, 100); }
+            if(pageId === 'calc-converter') { try { converterApp.init(); } catch(e) { console.error('Converter init error:', e); } }
+            if(pageId === 'calc-misc') { try { miscApp.init(); } catch(e) { console.error('Misc init error:', e); } }
         }
 
         function toggleMobileNav() {
@@ -779,7 +779,20 @@ let currentUser = null;
             nextId: 3,
             colors: ['#3b82f6', '#a855f7', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'],
             
-            init() { this.renderList(); setTimeout(()=> this.plot(), 100); },
+            init() { 
+                this.renderList(); 
+                setTimeout(() => {
+                    try {
+                        this.plot();
+                    } catch(err) {
+                        console.error('Error in graphApp.plot():', err);
+                        const graphDiv = document.getElementById('plotly-graph');
+                        if (graphDiv) {
+                            graphDiv.innerHTML = '<p style="padding: 20px; color: red;">Error rendering graph. Try adding an equation.</p>';
+                        }
+                    }
+                }, 150);
+            },
             addEquation() {
                 this.equations.push({ id: this.nextId++, expr: '', color: this.colors[this.equations.length % this.colors.length] });
                 this.renderList();
@@ -806,36 +819,60 @@ let currentUser = null;
                 `).join('');
             },
             plot() {
-                const graphDiv = document.getElementById('plotly-graph'); if (!graphDiv) return;
-                const xValues = math.range(-10, 10, 0.05).toArray(); const data = [];
+                const graphDiv = document.getElementById('plotly-graph'); 
+                if (!graphDiv) {
+                    console.error('Graph div not found');
+                    return;
+                }
                 
-                this.equations.forEach(eq => {
-                    if (!eq.expr.trim()) return;
-                    try {
-                        const compiled = math.compile(eq.expr);
-                        const yValues = xValues.map(x => { try { return compiled.evaluate({x: x}); } catch(e) { return null; } });
-                        data.push({ x: xValues, y: yValues, type: 'scatter', mode: 'lines', name: `y = ${eq.expr}`, line: { color: eq.color, width: 3 } });
-                    } catch(e) {}
-                });
+                if (!window.Plotly) {
+                    console.error('Plotly library not loaded');
+                    graphDiv.innerHTML = '<p style="padding: 20px; color: red;">Plotly library not loaded</p>';
+                    return;
+                }
                 
-                const textColor = getComputedStyle(document.body).getPropertyValue('--text-main').trim() || '#0f172a';
-                const isDark = document.body.getAttribute('data-theme') === 'dark';
-                const gridColor = isDark ? '#334155' : '#e2e8f0'; 
+                try {
+                    const xValues = math.range(-10, 10, 0.05).toArray(); 
+                    const data = [];
+                
+                    this.equations.forEach(eq => {
+                        if (!eq.expr.trim()) return;
+                        try {
+                            const compiled = math.compile(eq.expr);
+                            const yValues = xValues.map(x => { try { return compiled.evaluate({x: x}); } catch(e) { return null; } });
+                            data.push({ x: xValues, y: yValues, type: 'scatter', mode: 'lines', name: `y = ${eq.expr}`, line: { color: eq.color, width: 3 } });
+                        } catch(e) {
+                            console.warn('Error parsing equation ' + eq.expr + ':', e);
+                        }
+                    });
+                
+                    const textColor = getComputedStyle(document.body).getPropertyValue('--text-main').trim() || '#0f172a';
+                    const isDark = document.body.getAttribute('data-theme') === 'dark';
+                    const gridColor = isDark ? '#334155' : '#e2e8f0'; 
 
-                const layout = {
-                    margin: { t: 30, b: 30, l: 30, r: 30 }, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-                    font: { color: textColor },
-                    xaxis: { zerolinecolor: textColor, gridcolor: gridColor, dtick: 1 },
-                    yaxis: { zerolinecolor: textColor, gridcolor: gridColor, dtick: 1 },
-                    showlegend: true, legend: { x: 0, y: 1.1, orientation: 'h' },
-                    dragmode: 'pan', hovermode: 'x unified'
-                };
-                Plotly.newPlot('plotly-graph', data, layout, {
-                    responsive: true, 
-                    displayModeBar: false,
-                    scrollZoom: true,
-                    doubleClick: false
-                });
+                    const layout = {
+                        margin: { t: 30, b: 30, l: 30, r: 30 }, 
+                        paper_bgcolor: 'transparent', 
+                        plot_bgcolor: 'transparent',
+                        font: { color: textColor },
+                        xaxis: { zerolinecolor: textColor, gridcolor: gridColor, dtick: 1 },
+                        yaxis: { zerolinecolor: textColor, gridcolor: gridColor, dtick: 1 },
+                        showlegend: true, 
+                        legend: { x: 0, y: 1.1, orientation: 'h' },
+                        dragmode: 'pan', 
+                        hovermode: 'x unified'
+                    };
+                    
+                    Plotly.newPlot('plotly-graph', data, layout, {
+                        responsive: true, 
+                        displayModeBar: false,
+                        scrollZoom: true,
+                        doubleClick: false
+                    });
+                } catch(err) {
+                    console.error('Error in graphApp.plot():', err);
+                    graphDiv.innerHTML = '<p style="padding: 20px; color: red;">' + err.message + '</p>';
+                }
             },
             downloadGraph() {
                 const graphDiv = document.getElementById('plotly-graph');
@@ -862,8 +899,12 @@ let currentUser = null;
                 this.history = [];
                 this.expr = '';
                 this.mode = 'eval';
-                this.renderLeftPanel(); 
-                this.renderDisplay(); 
+                try {
+                    this.renderLeftPanel(); 
+                    this.renderDisplay();
+                } catch(err) {
+                    console.error('Error initializing matrix:', err);
+                }
             },
             newMatrix() {
                 const names = 'ABCDEFGH'.split(''); let next = names.find(n => !this.matrices[n]) || 'A';
@@ -1316,12 +1357,20 @@ let currentUser = null;
             toUnit: 'kilometer',
 
             init() {
-                this.renderTabs();
-                this.switchCategory('length');
+                try {
+                    this.renderTabs();
+                    this.switchCategory('length');
+                } catch(err) {
+                    console.error('Error initializing converter:', err);
+                }
             },
 
             renderTabs() {
                 const container = document.getElementById('converter-tabs');
+                if (!container) {
+                    console.error('converter-tabs element not found');
+                    return;
+                }
                 let html = '';
                 for (let cat in this.data) {
                     const label = cat.charAt(0).toUpperCase() + cat.slice(1);
@@ -1331,32 +1380,44 @@ let currentUser = null;
             },
 
             switchCategory(category) {
-                this.currentCategory = category;
-                this.renderTabs();
-                
-                const units = Object.keys(this.data[category].units);
-                this.fromUnit = units[0];
-                this.toUnit = units[1] || units[0];
-                
-                document.getElementById('conv-from-val').value = '1';
-                
-                this.renderLists();
-                this.calculate('from');
+                try {
+                    this.currentCategory = category;
+                    this.renderTabs();
+                    
+                    const units = Object.keys(this.data[category].units);
+                    this.fromUnit = units[0];
+                    this.toUnit = units[1] || units[0];
+                    
+                    const fromVal = document.getElementById('conv-from-val');
+                    if (fromVal) fromVal.value = '1';
+                    
+                    this.renderLists();
+                    this.calculate('from');
+                } catch(err) {
+                    console.error('Error switching converter category:', err);
+                }
             },
 
             renderLists() {
-                const units = Object.keys(this.data[this.currentCategory].units);
-                
-                const buildList = (type, currentSelection) => {
-                    return units.map(u => {
-                        const label = u.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                        const isActive = u === currentSelection ? 'active' : '';
-                        return `<div class="unit-item ${isActive}" onclick="converterApp.selectUnit('${type}', '${u}')">${label}</div>`;
-                    }).join('');
-                };
+                try {
+                    const units = Object.keys(this.data[this.currentCategory].units);
+                    
+                    const buildList = (type, currentSelection) => {
+                        return units.map(u => {
+                            const label = u.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            const isActive = u === currentSelection ? 'active' : '';
+                            return `<div class="unit-item ${isActive}" onclick="converterApp.selectUnit('${type}', '${u}')">${label}</div>`;
+                        }).join('');
+                    };
 
-                document.getElementById('conv-from-list').innerHTML = buildList('from', this.fromUnit);
-                document.getElementById('conv-to-list').innerHTML = buildList('to', this.toUnit);
+                    const fromList = document.getElementById('conv-from-list');
+                    const toList = document.getElementById('conv-to-list');
+                    
+                    if (fromList) fromList.innerHTML = buildList('from', this.fromUnit);
+                    if (toList) toList.innerHTML = buildList('to', this.toUnit);
+                } catch(err) {
+                    console.error('Error rendering converter lists:', err);
+                }
             },
 
             selectUnit(type, unit) {
@@ -1367,44 +1428,53 @@ let currentUser = null;
             },
 
             calculate(sourceChanged) {
-                const fromInput = document.getElementById('conv-from-val');
-                const toInput = document.getElementById('conv-to-val');
-                
-                let val = parseFloat(sourceChanged === 'from' ? fromInput.value : toInput.value);
-                if (isNaN(val)) {
-                    if (sourceChanged === 'from') toInput.value = '';
-                    else fromInput.value = '';
-                    return;
-                }
-
-                let result;
-                
-                if (this.currentCategory === 'temperature') {
-                    let inCelsius;
-                    const fromU = sourceChanged === 'from' ? this.fromUnit : this.toUnit;
-                    const toU = sourceChanged === 'from' ? this.toUnit : this.fromUnit;
-
-                    if (fromU === 'celsius') inCelsius = val;
-                    else if (fromU === 'fahrenheit') inCelsius = (val - 32) * 5/9;
-                    else if (fromU === 'kelvin') inCelsius = val - 273.15;
-
-                    if (toU === 'celsius') result = inCelsius;
-                    else if (toU === 'fahrenheit') result = (inCelsius * 9/5) + 32;
-                    else if (toU === 'kelvin') result = inCelsius + 273.15;
-                } else {
-                    const factors = this.data[this.currentCategory].units;
-                    if (sourceChanged === 'from') {
-                        const inBase = val * factors[this.fromUnit];
-                        result = inBase / factors[this.toUnit];
-                    } else {
-                        const inBase = val * factors[this.toUnit];
-                        result = inBase / factors[this.fromUnit];
+                try {
+                    const fromInput = document.getElementById('conv-from-val');
+                    const toInput = document.getElementById('conv-to-val');
+                    
+                    if (!fromInput || !toInput) {
+                        console.error('Converter input elements not found');
+                        return;
                     }
-                }
+                    
+                    let val = parseFloat(sourceChanged === 'from' ? fromInput.value : toInput.value);
+                    if (isNaN(val)) {
+                        if (sourceChanged === 'from') toInput.value = '';
+                        else fromInput.value = '';
+                        return;
+                    }
 
-                result = parseFloat(result.toFixed(6));
-                if (sourceChanged === 'from') toInput.value = result;
-                else fromInput.value = result;
+                    let result;
+                    
+                    if (this.currentCategory === 'temperature') {
+                        let inCelsius;
+                        const fromU = sourceChanged === 'from' ? this.fromUnit : this.toUnit;
+                        const toU = sourceChanged === 'from' ? this.toUnit : this.fromUnit;
+
+                        if (fromU === 'celsius') inCelsius = val;
+                        else if (fromU === 'fahrenheit') inCelsius = (val - 32) * 5/9;
+                        else if (fromU === 'kelvin') inCelsius = val - 273.15;
+
+                        if (toU === 'celsius') result = inCelsius;
+                        else if (toU === 'fahrenheit') result = (inCelsius * 9/5) + 32;
+                        else if (toU === 'kelvin') result = inCelsius + 273.15;
+                    } else {
+                        const factors = this.data[this.currentCategory].units;
+                        if (sourceChanged === 'from') {
+                            const inBase = val * factors[this.fromUnit];
+                            result = inBase / factors[this.toUnit];
+                        } else {
+                            const inBase = val * factors[this.toUnit];
+                            result = inBase / factors[this.fromUnit];
+                        }
+                    }
+
+                    result = parseFloat(result.toFixed(6));
+                    if (sourceChanged === 'from') toInput.value = result;
+                    else fromInput.value = result;
+                } catch(err) {
+                    console.error('Error calculating conversion:', err);
+                }
             }
         };
 
@@ -1761,6 +1831,38 @@ let currentUser = null;
                 answer.style.display = 'block';
                 arrow.style.transform = 'rotate(180deg)';
             }
+        }
+
+        // --- NEWSLETTER SUBSCRIPTION ---
+        function handleNewsletterSubscribe(event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('newsletter-email');
+            const button = document.getElementById('newsletter-btn');
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                alert('Please enter your email address.');
+                return;
+            }
+            
+            // Save subscription in localStorage
+            let subscribers = JSON.parse(localStorage.getItem('mathHubSubscribers')) || [];
+            if (!subscribers.includes(email)) {
+                subscribers.push(email);
+                localStorage.setItem('mathHubSubscribers', JSON.stringify(subscribers));
+            }
+            
+            // Show success message
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 0.5rem;"></i> Subscribed!';
+            button.style.backgroundColor = 'rgba(16, 185, 129, 0.8)';
+            
+            // Reset form and button after 3 seconds
+            setTimeout(() => {
+                emailInput.value = '';
+                button.innerHTML = originalText;
+                button.style.backgroundColor = '';
+            }, 3000);
         }
 
         // Initialize App
