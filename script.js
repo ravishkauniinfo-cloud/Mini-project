@@ -345,6 +345,7 @@ let currentUser = null;
             });
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMobileMenu();
             
             // Initialization triggers for advanced tools
             if(pageId === 'calc-graph') { setTimeout(() => { try { graphApp.init(); } catch(e) { console.error('Graph init error:', e); } }, 100); } 
@@ -358,6 +359,26 @@ let currentUser = null;
         function toggleMobileNav() {
             const navLinks = document.getElementById('navLinks');
             if (navLinks) navLinks.classList.toggle('show');
+        }
+
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const icon = document.getElementById('mobileMenuIcon');
+            if (navLinks) {
+                navLinks.classList.toggle('mobile-open');
+                if (icon) {
+                    icon.className = navLinks.classList.contains('mobile-open') 
+                        ? 'fa-solid fa-xmark' 
+                        : 'fa-solid fa-bars';
+                }
+            }
+        }
+
+        function closeMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const icon = document.getElementById('mobileMenuIcon');
+            if (navLinks) navLinks.classList.remove('mobile-open');
+            if (icon) icon.className = 'fa-solid fa-bars';
         }
 
         // --- THEME / DARK MODE ---
@@ -1665,6 +1686,31 @@ let currentUser = null;
 
             // Load saved reviews on page load
             renderReviews();
+
+            // Mobile dropdown toggle (touch devices can't hover)
+            document.querySelectorAll('.dropdown > .dropdown-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        const parent = this.closest('.dropdown');
+                        // Close other open dropdowns
+                        document.querySelectorAll('.dropdown.open').forEach(d => {
+                            if (d !== parent) d.classList.remove('open');
+                        });
+                        parent.classList.toggle('open');
+                    }
+                });
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    if (!e.target.closest('.navbar')) {
+                        closeMobileMenu();
+                        document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+                    }
+                }
+            });
         });
 
         // --- COMMUNITY REVIEWS ---
