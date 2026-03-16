@@ -484,10 +484,6 @@
             isPaused: false,
             currentMode: 'study', // 'study', 'break', 'longBreak'
             sessionCount: 1,
-            sessionsBeforeLongBreak: 4,
-            completedSessions: 0,
-            totalStudyTime: 0,
-            totalBreakTime: 0,
             interval: null,
             
             settings: {
@@ -498,8 +494,19 @@
             },
             
             init: function() {
+                this.loadStats();
                 this.updateDisplay();
                 this.updateSettings();
+                this.updateStatus();
+                this.updateStatsDisplay();
+            },
+
+            loadStats: function() {
+                const stats = JSON.parse(localStorage.getItem('studyStats')) || { completedSessions: 0, totalStudyTime: 0, totalBreakTime: 0 };
+                this.completedSessions = stats.completedSessions;
+                this.totalStudyTime = stats.totalStudyTime;
+                this.totalBreakTime = stats.totalBreakTime;
+                this.updateStatsDisplay();
             },
             
             updateSettings: function() {
@@ -563,8 +570,16 @@
                 this.isRunning = false;
                 
                 if (this.currentMode === 'study') {
+                    // Log study session
+                    const studyLog = JSON.parse(localStorage.getItem('studyLog')) || [];
+                    studyLog.push({ date: new Date().toISOString(), duration: this.settings.study });
+                    localStorage.setItem('studyLog', JSON.stringify(studyLog));
+
                     this.completedSessions++;
                     this.totalStudyTime += this.settings.study;
+
+                    // Save stats
+                    this.saveStats();
                     
                     if (this.sessionCount % this.settings.sessionsBeforeLongBreak === 0) {
                         this.currentMode = 'longBreak';
@@ -579,6 +594,7 @@
                     this.playNotification('Time for a break!');
                 } else {
                     this.totalBreakTime += (this.currentMode === 'break' ? this.settings.break : this.settings.longBreak);
+                    this.saveStats();
                     this.currentMode = 'study';
                     this.sessionCount++;
                     this.timeLeft = this.settings.study * 60;
@@ -589,7 +605,7 @@
                 
                 this.updateDisplay();
                 this.updateStatus();
-                this.updateStats();
+                this.updateStatsDisplay();
                 
                 // Auto-start next session after 1 second
                 setTimeout(() => {
@@ -622,10 +638,15 @@
                 document.getElementById('sessionCount').textContent = `Session: ${this.sessionCount} / ${this.settings.sessionsBeforeLongBreak}`;
             },
             
-            updateStats: function() {
+            updateStatsDisplay: function() {
                 document.getElementById('completedSessions').textContent = this.completedSessions;
                 document.getElementById('totalStudyTime').textContent = this.totalStudyTime;
                 document.getElementById('totalBreakTime').textContent = this.totalBreakTime;
+            },
+
+            saveStats: function() {
+                const stats = { completedSessions: this.completedSessions, totalStudyTime: this.totalStudyTime, totalBreakTime: this.totalBreakTime };
+                localStorage.setItem('studyStats', JSON.stringify(stats));
             },
             
             playNotification: function(message) {

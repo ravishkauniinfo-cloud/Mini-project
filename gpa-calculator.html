@@ -488,6 +488,14 @@
                 } else {
                     resultContainer.style.display = 'none';
                 }
+
+                // Save to localStorage for dashboard
+                if (totalCredits > 0) {
+                    const gpa = totalPoints / totalCredits;
+                    let gpaHistory = JSON.parse(localStorage.getItem('gpaHistory')) || [];
+                    gpaHistory.push({ date: new Date().toISOString(), gpa: gpa.toFixed(2) });
+                    localStorage.setItem('gpaHistory', JSON.stringify(gpaHistory));
+                }
             }
         };
 

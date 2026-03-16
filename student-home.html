@@ -8,22 +8,175 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Student Toolkit - Home</title>
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
+
+    <style>
+        /* Embedded Liquid Glass Specific Styles */
+        :root {
+            --liquid-bg: rgba(255, 255, 255, 0.08);
+            --liquid-border: rgba(255, 255, 255, 0.15);
+            --primary-glow: rgba(139, 92, 246, 0.3);
+        }
+
+        .liquid-glass-area {
+            max-width: 1200px;
+            margin: 6rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .liquid-glass {
+            background: var(--liquid-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--liquid-border);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            height: 100%;
+        }
+
+        .liquid-glass:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 45px 0 var(--primary-glow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .card-glow {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid transparent;
+            transition: 0.3s ease;
+        }
+
+        .stat-pill:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--liquid-border);
+            transform: scale(1.02);
+        }
+
+        .stat-icon-wrap {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .liquid-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--liquid-border);
+            border-radius: 12px;
+            color: white;
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .liquid-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .liquid-progress-track {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin: 1.2rem 0 0.5rem;
+            overflow: hidden;
+        }
+
+        .liquid-progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+        }
+
+        .calendar-input-row {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .btn-liquid-add {
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            width: 45px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-liquid-add:hover {
+            filter: brightness(1.2);
+            transform: rotate(90deg);
+        }
+
+        .liquid-event-list li {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--primary);
+            backdrop-filter: blur(5px);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Animated Ambient Background -->
     <div class="bg-blob blob-1"></div>
     <div class="bg-blob blob-2"></div>
     <div class="bg-blob blob-3"></div>
 
-    <!-- NAVIGATION BAR -->
     <nav class="navbar glass">
         <div class="nav-brand" onclick="window.location.href='index.html'">
             <i class="fa-solid fa-infinity" style="color: var(--primary);"></i> MathHub
@@ -156,19 +309,16 @@
         </div>
     </nav>
 
-    <!-- LOGIN / SIGN UP / PROFILE MODAL -->
     <div class="modal-overlay" id="loginModal">
         <div class="login-modal">
             <button class="close-modal" onclick="document.getElementById('loginModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button>
             
-            <!-- Brand Icon (Hidden in profile mode) -->
             <div id="auth-brand-icon" style="text-align: center; margin-bottom: 2rem;">
                 <div style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.15); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.2);">
                     <i class="fa-solid fa-infinity" style="font-size: 2rem; background: linear-gradient(135deg, #3b82f6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                 </div>
             </div>
 
-            <!-- Login Form -->
             <div id="form-login" class="auth-form-container">
                 <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 1.5rem; text-align: center; color: var(--text-main); letter-spacing: -0.5px;">Welcome Back</h2>
                 
@@ -190,7 +340,6 @@
                 <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem;">Don't have an account? <a href="javascript:void(0)" onclick="switchAuthForm('signup')" style="color: #8b5cf6; font-weight: 700; text-decoration: none;">Sign up</a></p>
             </div>
 
-            <!-- Sign Up Form -->
             <div id="form-signup" class="auth-form-container" style="display: none;">
                 <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 1.5rem; text-align: center; color: var(--text-main); letter-spacing: -0.5px;">Create Account</h2>
                 
@@ -213,7 +362,6 @@
                 <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem;">Already have an account? <a href="javascript:void(0)" onclick="switchAuthForm('login')" style="color: #8b5cf6; font-weight: 700; text-decoration: none;">Sign in</a></p>
             </div>
 
-            <!-- Profile View -->
             <div id="form-profile" class="auth-form-container" style="display: none;">
                 <div style="text-align: center; margin-bottom: 2rem;">
                     <div id="profile-avatar-large" style="width: 80px; height: 80px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-size: 2.5rem; font-weight: 700; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 15px; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4); border: 3px solid rgba(255,255,255,0.5);">R</div>
@@ -237,7 +385,6 @@
         </div>
     </div>
 
-    <!-- STUDENT TOOLKIT HOME PAGE -->
     <main class="page active" id="student-home">
         <section class="hero">
             <h1 class="hero-title animated-gradient-text">Student Toolkit</h1>
@@ -245,6 +392,11 @@
         </section>
         
         <section class="tools-grid">
+            <div class="tool-card glass" onclick="window.location.href='index.html'">
+                <i class="fa-solid fa-calculator tool-icon"></i>
+                <h3>Math Tools</h3>
+                <p>Access our full suite of powerful math calculators, from basic arithmetic to advanced calculus.</p>
+            </div>
             <div class="tool-card glass" onclick="window.location.href='gpa-calculator.html'">
                 <i class="fa-solid fa-graduation-cap tool-icon"></i>
                 <h3>GPA Calculator</h3>
@@ -265,14 +417,58 @@
                 <h3>AI Results Predictor</h3>
                 <p>Predict your exam marks based on your study habits using our AI model.</p>
             </div>
-            <div class="tool-card glass" onclick="window.location.href='index.html'">
-                <i class="fa-solid fa-calculator tool-icon"></i>
-                <h3>Math Tools</h3>
-                <p>Access all mathematical calculators and tools for your academic needs.</p>
+        </section>
+
+        <section class="liquid-glass-area">
+            <div class="calc-header" style="margin-bottom: 3.5rem;">
+                <h2 class="hero-title animated-gradient-text" style="font-size: 2.8rem;">Smart Study Analytics</h2>
+                <p>Personalized insights to power your academic growth.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                
+                <div class="dashboard-card liquid-glass">
+                    <div class="card-glow"></div>
+                    <h3 class="dash-card-title"><i class="fa-solid fa-bullseye"></i> Goal Targets</h3>
+                    <div class="goals-container">
+                        <div class="goal-item-fancy">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-weight: 600;">Target GPA</label>
+                                <input type="number" id="target-gpa" step="0.1" class="liquid-input" style="width: 70px;" onchange="dashboardApp.saveGoals()">
+                            </div>
+                            <div class="liquid-progress-track">
+                                <div class="liquid-progress-fill" id="gpa-progress-bar" style="width: 0%; background: linear-gradient(90deg, #10b981, #3b82f6);"></div>
+                            </div>
+                            <div class="progress-label" id="gpa-progress-label" style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">0.0 / 4.0</div>
+                        </div>
+                        
+                        <div class="goal-item-fancy" style="margin-top: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-weight: 600;">Weekly Study Hours</label>
+                                <input type="number" id="weekly-hours" min="1" step="0.5" class="liquid-input" style="width: 80px;" onchange="dashboardApp.saveGoals()" placeholder="auto" readonly>
+                            </div>
+                            <div class="liquid-progress-track">
+                                <div class="liquid-progress-fill" id="study-progress-bar" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
+                            </div>
+                            <div class="progress-label" id="study-progress-label" style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">0 / <span id="study-hours-target-display">10</span> hours</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card liquid-glass">
+                    <div class="card-glow"></div>
+                    <h3 class="dash-card-title"><i class="fa-solid fa-calendar-days"></i> Upcoming Deadlines</h3>
+                    <div class="calendar-input-row">
+                        <input type="text" id="event-title" placeholder="Event Name" class="liquid-input" style="flex: 2;">
+                        <input type="date" id="event-date" class="liquid-input" style="flex: 1;">
+                        <button class="btn-liquid-add" onclick="dashboardApp.addEvent()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <ul id="event-list" class="liquid-event-list">
+                        </ul>
+                </div>
             </div>
         </section>
 
-        <!-- Features Section -->
         <section class="faq-section" style="max-width: 1000px; margin: 4rem auto; padding: 0 2rem;">
             <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 3rem; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Why Choose Our Student Toolkit?</h2>
             
@@ -294,74 +490,46 @@
                         The study timer implements the Pomodoro technique, helping you maintain focus during study sessions and take regular breaks to prevent burnout.
                     </div>
                 </div>
-                
-                <div class="faq-item glass" style="border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;">
-                    <div class="faq-question" style="width: 100%; padding: 2rem; background: none; border: none; text-align: left; cursor: default; display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: 700; color: var(--text-main);">
-                        <span><i class="fa-solid fa-infinity" style="color: var(--tertiary); margin-right: 0.5rem;"></i>Integrated Experience</span>
-                    </div>
-                    <div class="faq-answer" style="padding: 0 2rem 2rem 2rem; color: var(--text-muted); line-height: 1.6;">
-                        Seamlessly integrated with our MathHub platform, providing a unified experience for all your academic and mathematical needs.
-                    </div>
-                </div>
             </div>
         </section>
     </main>
 
-    <!-- FOOTER -->
     <footer id="footer" style="background: var(--glass-panel); border-top: 1px solid var(--glass-border); padding: 2rem 2rem; margin-top: auto; z-index: 10;">
         <div style="max-width: 1400px; margin: 0 auto;">
-            <!-- Footer Content Grid -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
-                <!-- Left Section: Brand -->
                 <div style="text-align: center;">
                     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem;">
                         <i class="fa-solid fa-infinity" style="color: var(--primary); font-size: 1.8rem;"></i>
                         <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">MathHub</h3>
                     </div>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; text-align: center;">
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; text-align: center;">
                         Interactive mathematics and learning tools for modern enthusiasts.
                     </p>
-                    <div class="footer-socials" style="display: flex; gap: 1rem; justify-content: center;">
-                        <a href="https://github.com/ravishkauniinfo-cloud/Mini-project.git" target="_blank" title="GitHub" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(100, 116, 139, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s ease;">
-                            <i class="fa-brands fa-github"></i>
-                        </a>
-                    </div>
                 </div>
 
-                <!-- Middle Section: Contact & Support -->
                 <div>
                     <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Contact & Support</h3>
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--btn-bg); border-radius: 10px; border: 1px solid var(--glass-border);">
                      <i class="fa-solid fa-envelope" style="color: var(--primary); font-size: 1.2rem;"></i>
                         <a href="mailto:ucsc.group13@gmail.com" style="color: var(--text-main); text-decoration: none; font-weight: 500;">ucsc.group13@gmail.com</a>
                     </div>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
-                        Have questions or feedback? Let us know! We're here to help you learn and succeed.
-                    </p>
                 </div>
 
-                <!-- Right Section: Newsletter -->
                 <div>
                     <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Stay Updated</h3>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
-                        Subscribe to our newsletter for the latest updates and features.
-                    </p>
                     <form id="newsletter-form" style="display: flex; gap: 0.5rem; flex-direction: column;" onsubmit="handleNewsletterSubscribe(event)">
                         <input type="email" id="newsletter-email" placeholder="Enter your email" required style="padding: 0.75rem; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--btn-bg); color: var(--text-main); font-size: 0.95rem;">
-                        <button type="submit" id="newsletter-btn" class="btn" style="padding: 0.75rem 1.5rem; font-weight: 600;">
+                        <button type="submit" class="btn" style="padding: 0.75rem 1.5rem; font-weight: 600;">
                             <i class="fa-solid fa-bell" style="margin-right: 0.5rem;"></i> Subscribe
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Divider -->
             <div style="height: 1px; background: var(--glass-border); margin-bottom: 2rem;"></div>
-
-            <!-- Footer Bottom -->
-            <div style="text-align: center; ">
+            <div style="text-align: center;">
                 <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
-                    &copy; 2026 MathHub. All rights reserved. Designed for interactive learning.
+                    &copy; 2026 MathHub. All rights reserved.
                 </p>
             </div>
         </div>

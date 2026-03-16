@@ -1648,12 +1648,353 @@ let currentUser = null;
             }, 3000);
         }
 
+        // --- STUDENT DASHBOARD ---
+        const dashboardApp = {
+            gpaChart: null,
+            demoSeeded: false,
+
+            init() {
+                this.ensureDefaults();
+                this.loadGoals();
+                this.loadAndRenderStats();
+                this.loadAndRenderGpaChart();
+                this.loadAndRenderCalendar();
+                this.updateGoalProgress();
+                this.attachGoalListeners();
+            },
+
+            // --- DATA LOADING ---
+            getStudyLog() {
+                try {
+                    return JSON.parse(localStorage.getItem('studyLog')) || [];
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            getGpaHistory() {
+                try {
+                    return JSON.parse(localStorage.getItem('gpaHistory')) || [];
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            getGoals() {
+                try {
+                    const stored = JSON.parse(localStorage.getItem('studyGoals'));
+                    if (stored) return stored;
+                    const defaults = { targetGpa: 3.5, weeklyHours: 10 };
+                    localStorage.setItem('studyGoals', JSON.stringify(defaults));
+                    return defaults;
+                } catch (e) {
+                    return { targetGpa: 3.5, weeklyHours: 10 };
+                }
+            },
+
+            getCalendarEvents() {
+                try {
+                    return JSON.parse(localStorage.getItem('calendarEvents')) || [];
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            // --- RENDER METHODS ---
+            loadAndRenderStats() {
+                const studyLog = this.getStudyLog();
+                const gpaHistory = this.getGpaHistory();
+
+                // Total Study Time
+                const totalMinutes = studyLog.reduce((acc, session) => acc + session.duration, 0);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                document.getElementById('dash-total-study-time').textContent = `${hours}h ${minutes}m`;
+
+                // Current GPA
+                const lastGpa = gpaHistory.length > 0 ? gpaHistory[gpaHistory.length - 1].gpa : 'N/A';
+                document.getElementById('dash-current-gpa').textContent = lastGpa;
+
+                // Sessions this week
+                const today = new Date();
+                const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, ...
+                const firstDayOfWeek = new Date(today);
+                firstDayOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Adjust to Monday as start of week
+                firstDayOfWeek.setHours(0, 0, 0, 0);
+
+                const sessionsThisWeek = studyLog.filter(s => new Date(s.date) >= firstDayOfWeek).length;
+                document.getElementById('dash-sessions-this-week').textContent = sessionsThisWeek;
+            },
+
+            loadAndRenderGpaChart() {
+                const ctx = document.getElementById('gpaTrendChart');
+                if (!ctx) return;
+
+                const history = this.getGpaHistory();
+                const labels = history.map(h => new Date(h.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                const data = history.map(h => h.gpa);
+
+                if (this.gpaChart) {
+                    this.gpaChart.destroy();
+                }
+                
+                const isDark = document.body.getAttribute('data-theme') === 'dark';
+                const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+                const fontColor = isDark ? '#f8fafc' : '#0f172a';
+
+                this.gpaChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'GPA',
+                            data: data,
+                            borderColor: 'rgba(139, 92, 246, 1)',
+                            backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 7,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(139, 92, 246, 1)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                suggestedMin: 2.0,
+                                suggestedMax: 4.0,
+                                grid: { color: gridColor },
+                                ticks: { color: fontColor }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: fontColor }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: isDark ? '#1e293b' : '#fff',
+                                titleColor: fontColor,
+                                bodyColor: fontColor,
+                                borderColor: 'rgba(139, 92, 246, 0.5)',
+                                borderWidth: 1
+                            }
+                        }
+                    }
+                });
+            },
+
+            loadGoals() {
+                const goals = this.getGoals();
+                document.getElementById('target-gpa').value = goals.targetGpa;
+
+                // Auto-calc weekly target based on GPA ambition
+                const autoWeekly = this.calculateWeeklyMax(goals.targetGpa);
+                goals.weeklyHours = autoWeekly;
+                document.getElementById('weekly-hours').value = autoWeekly;
+                localStorage.setItem('studyGoals', JSON.stringify(goals));
+
+                const targetDisplay = document.getElementById('study-hours-target-display');
+                if (targetDisplay) targetDisplay.textContent = autoWeekly;
+                this.updateWeeklyHoursMax(goals);
+            },
+
+            saveGoals() {
+                const targetGpa = parseFloat(document.getElementById('target-gpa').value) || 4.0;
+                const maxHours = this.calculateWeeklyMax(targetGpa);
+                const weeklyInput = document.getElementById('weekly-hours');
+                if (weeklyInput) weeklyInput.value = maxHours;
+
+                const goals = { targetGpa, weeklyHours: maxHours };
+                localStorage.setItem('studyGoals', JSON.stringify(goals));
+                this.updateGoalProgress();
+                const targetDisplay = document.getElementById('study-hours-target-display');
+                if (targetDisplay) targetDisplay.textContent = maxHours;
+                this.updateWeeklyHoursMax(goals);
+            },
+
+            updateGoalProgress() {
+                const goals = this.getGoals();
+                const gpaHistory = this.getGpaHistory();
+                const studyLog = this.getStudyLog();
+
+                // GPA Progress
+                const currentGpa = gpaHistory.length > 0 ? parseFloat(gpaHistory[gpaHistory.length - 1].gpa) : 0;
+                const gpaProgress = (currentGpa / goals.targetGpa) * 100;
+                document.getElementById('gpa-progress-bar').style.width = `${Math.min(gpaProgress, 100)}%`;
+                document.getElementById('gpa-progress-label').textContent = `${currentGpa.toFixed(2)} / ${goals.targetGpa.toFixed(2)}`;
+
+                // Study Hours Progress
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const firstDayOfWeek = new Date(today);
+                firstDayOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+                firstDayOfWeek.setHours(0, 0, 0, 0);
+
+                const minutesThisWeek = studyLog
+                    .filter(s => new Date(s.date) >= firstDayOfWeek)
+                    .reduce((acc, s) => acc + s.duration, 0);
+                const hoursThisWeek = minutesThisWeek / 60;
+                const studyProgress = (hoursThisWeek / goals.weeklyHours) * 100;
+                document.getElementById('study-progress-bar').style.width = `${Math.min(studyProgress, 100)}%`;
+                document.getElementById('study-progress-label').textContent = `${hoursThisWeek.toFixed(1)} / ${goals.weeklyHours} hours`;
+            },
+
+            loadAndRenderCalendar() {
+                const events = (this.getCalendarEvents() || []).sort((a, b) => new Date(a.date) - new Date(b.date));
+                const eventList = document.getElementById('event-list');
+                if (!eventList) return;
+                eventList.innerHTML = '';
+
+                if (events.length === 0) {
+                    eventList.innerHTML = `<li style="text-align: center; color: var(--text-muted); padding: 1rem;">No upcoming deadlines.</li>`;
+                    return;
+                }
+
+                events.forEach((event, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'event-item';
+                    li.innerHTML = `
+                        <div class="event-details">
+                            <span class="event-title">${event.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>
+                            <span class="event-date">${new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        <button class="event-delete-btn" onclick="dashboardApp.deleteEvent(${index})"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                    eventList.appendChild(li);
+                });
+            },
+
+            addEvent() {
+                const titleInput = document.getElementById('event-title');
+                const dateInput = document.getElementById('event-date');
+                const title = titleInput.value.trim();
+                const date = dateInput.value;
+
+                if (!title || !date) {
+                    alert('Please enter both a title and a date for the event.');
+                    return;
+                }
+
+                const today = new Date().toISOString().split('T')[0];
+                if (date < today) {
+                    alert('Please choose today or a future date.');
+                    return;
+                }
+
+                const events = this.getCalendarEvents();
+                events.push({ title, date });
+                localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+                titleInput.value = '';
+                dateInput.value = '';
+                this.loadAndRenderCalendar();
+            },
+
+            deleteEvent(index) {
+                if (!confirm('Are you sure you want to delete this event?')) return;
+                const events = this.getCalendarEvents();
+                events.splice(index, 1);
+                localStorage.setItem('calendarEvents', JSON.stringify(events));
+                this.loadAndRenderCalendar();
+            },
+
+            // --- HELPERS ---
+            ensureDefaults() {
+                const todayIso = () => new Date().toISOString().split('T')[0];
+                const plusDaysIso = (n) => {
+                    const d = new Date();
+                    d.setDate(d.getDate() + n);
+                    return d.toISOString().split('T')[0];
+                };
+
+                // Seed friendly demo data if nothing is saved yet so the dashboard is never empty.
+                if (!localStorage.getItem('studyLog')) {
+                    const today = new Date();
+                    const sampleStudy = [
+                        { date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 2).toISOString(), duration: 90 },
+                        { date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1).toISOString(), duration: 75 },
+                        { date: new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString(), duration: 60 },
+                    ];
+                    localStorage.setItem('studyLog', JSON.stringify(sampleStudy));
+                }
+
+                if (!localStorage.getItem('gpaHistory')) {
+                    const today = new Date();
+                    const sampleGpa = [
+                        { date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 14).toISOString(), gpa: 3.2 },
+                        { date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7).toISOString(), gpa: 3.35 },
+                        { date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1).toISOString(), gpa: 3.5 },
+                    ];
+                    localStorage.setItem('gpaHistory', JSON.stringify(sampleGpa));
+                }
+
+                // Ensure calendar storage exists and is prefilled so events show immediately
+                const existingEvents = this.getCalendarEvents();
+                if (!existingEvents || existingEvents.length === 0) {
+                    const sampleEvents = [
+                        { title: 'Math Quiz', date: plusDaysIso(2) },
+                        { title: 'Lab Report Due', date: plusDaysIso(5) },
+                        { title: 'Midterm Exam', date: plusDaysIso(10) }
+                    ];
+                    localStorage.setItem('calendarEvents', JSON.stringify(sampleEvents));
+                }
+
+                // Prevent selecting past dates for new events
+                const dateInput = document.getElementById('event-date');
+                if (dateInput) {
+                    dateInput.min = todayIso();
+                }
+            },
+
+            attachGoalListeners() {
+                const targetInput = document.getElementById('target-gpa');
+                const weeklyInput = document.getElementById('weekly-hours');
+                if (targetInput) {
+                    targetInput.addEventListener('input', () => this.saveGoals());
+                    targetInput.addEventListener('change', () => this.saveGoals());
+                }
+                if (weeklyInput) {
+                    weeklyInput.addEventListener('input', () => this.saveGoals());
+                    weeklyInput.addEventListener('change', () => this.saveGoals());
+                }
+            },
+
+            updateWeeklyHoursMax(goals) {
+                const weeklyInput = document.getElementById('weekly-hours');
+                if (!weeklyInput) return;
+                const maxHours = this.calculateWeeklyMax(goals.targetGpa);
+                weeklyInput.max = maxHours;
+                weeklyInput.value = maxHours;
+                goals.weeklyHours = maxHours;
+                localStorage.setItem('studyGoals', JSON.stringify(goals));
+            },
+
+            calculateWeeklyMax(targetGpa) {
+                // Scale max hours with ambition: up to 5x target GPA (e.g., GPA 4 -> 20 hours)
+                return Math.max(5, Math.round((targetGpa || 4) * 5));
+            }
+        };
+
         // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize calculation history
             calcHistory.init();
 
             if(document.getElementById('calc-sci').classList.contains('active')) sciApp.init();
+
+            // Initialize dashboard if on student home page
+            if (document.getElementById('student-home')?.classList.contains('active')) {
+                dashboardApp.init();
+            }
 
             // Keyboard support for Scientific Calculator
             document.addEventListener('keydown', function(e) {
