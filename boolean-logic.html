@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Boolean Logic Lab - Truth tables, simplification, logic gates, K-maps, and quizzes.">
+    <title>Boolean Logic Lab - MathHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <style>
+        :root { --panel: rgba(255,255,255,0.06); --border: rgba(255,255,255,0.12); }
+        body { color: var(--text-main); }
+        .logic-hero { text-align:center; padding:3rem 1rem 2rem; }
+        .logic-grid { max-width:1200px; margin:0 auto; display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); padding:0 1rem 3rem; }
+        .logic-card { background: var(--panel); border:1px solid var(--border); border-radius:18px; padding:1.5rem; backdrop-filter: blur(12px); box-shadow:0 20px 45px rgba(0,0,0,0.25); }
+        .logic-card h3 { margin-top:0; margin-bottom:0.75rem; }
+        textarea, input[type="text"], input[type="number"] { width:100%; padding:0.75rem 1rem; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.15); color:var(--text-main); }
+        button { background: linear-gradient(135deg, #8b5cf6, #6366f1); color:white; border:none; border-radius:12px; padding:0.75rem 1rem; cursor:pointer; font-weight:700; transition:transform 0.15s ease, box-shadow 0.15s ease; }
+        button:hover { transform:translateY(-2px); box-shadow:0 10px 25px rgba(99,102,241,0.4); }
+        .btn-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem; }
+        table { width:100%; border-collapse:collapse; margin-top:0.75rem; }
+        th, td { border:1px solid var(--border); padding:0.5rem; text-align:center; }
+        th { background: rgba(255,255,255,0.05); }
+        pre { background: rgba(0,0,0,0.25); padding:0.75rem; border-radius:12px; overflow:auto; }
+        .kmap { display:grid; gap:6px; margin-top:0.75rem; }
+        .kcell { padding:0.5rem; border:1px solid var(--border); border-radius:10px; text-align:center; background:rgba(255,255,255,0.05); }
+        .kcell.on { background:linear-gradient(135deg,#10b98155,#3b82f655); border-color:#10b981aa; }
+        .diagram { display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; }
+        .gate { display:inline-block; padding:0.4rem 0.7rem; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.07); }
+        .quiz-box { display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem; }
+        .muted { color: var(--text-muted); }
+        code { background: rgba(255,255,255,0.07); padding:0.15rem 0.35rem; border-radius:6px; }
+    </style>
+</head>
+<body>
+    <!-- Animated Ambient Background -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <!-- NAVIGATION BAR (copied from home) -->
+    <nav class="navbar glass">
+        <div class="nav-brand" onclick="navigateTo('home')">
+            <i class="fa-solid fa-infinity" style="color: var(--primary);"></i> MathHub
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" class="nav-item">Home</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle">Math Tools <i class="fa-solid fa-chevron-down" style="font-size: 0.7em;"></i></a>
+                <div class="dropdown-menu">
+                    <a href="index.html#" onclick="navigateTo('calc-graph')">
+                        <div class="dropdown-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #10b981;"><i class="fa-solid fa-chart-line"></i></div>
+                        Graphing Calculator
+                    </a>
+                    <a href="index.html#" onclick="navigateTo('calc-sci')">
+                        <div class="dropdown-icon-box" style="background: rgba(20, 184, 166, 0.2); color: #14b8a6;"><i class="fa-solid fa-flask"></i></div>
+                        Scientific Calculator
+                    </a>
+                    <a href="index.html#" onclick="navigateTo('calc-four')">
+                        <div class="dropdown-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;"><i class="fa-solid fa-calculator"></i></div>
+                        Standard Calculator
+                    </a>
+                    <a href="index.html#" onclick="navigateTo('calc-matrix')">
+                        <div class="dropdown-icon-box" style="background: rgba(99, 102, 241, 0.2); color: #6366f1;"><i class="fa-solid fa-border-all"></i></div>
+                        Matrix Calculator
+                    </a>
+                    <div style="height: 1px; width: 100%; background: rgba(100, 116, 139, 0.2); margin: 0.5rem 0;"></div>
+                    <a href="index.html#" onclick="navigateTo('calc-converter')">
+                        <div class="dropdown-icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;"><i class="fa-solid fa-ruler-combined"></i></div>
+                        Unit Converter
+                    </a>
+                    <a href="index.html#" onclick="navigateTo('calc-num-sys')">
+                        <div class="dropdown-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;"><i class="fa-solid fa-microchip"></i></div>
+                        Number System
+                    </a>
+                    <a href="index.html#" onclick="navigateTo('calc-calculus')">
+                        <div class="dropdown-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #ec4899;"><span style="font-family: 'Times New Roman', serif; font-size: 1.6rem; font-style: italic; font-weight: bold; line-height: 1;">&int;</span></div>
+                        Calculus
+                    </a>
+                    <a href="index.html#" onclick="navigateTo('calc-misc')">
+                        <div class="dropdown-icon-box" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e;"><i class="fa-solid fa-layer-group"></i></div>
+                        Misc Calculators
+                    </a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle">Resources <i class="fa-solid fa-chevron-down" style="font-size: 0.7em;"></i></a>
+                <div class="dropdown-menu" style="min-width: 250px;">
+                    <a href="about-us.html">
+                        <div class="dropdown-icon-box" style="background: rgba(100, 116, 139, 0.2); color: var(--text-muted);"><i class="fa-solid fa-circle-info"></i></div>
+                        About Us
+                    </a>
+                    <a href="student-home.html">
+                        <div class="dropdown-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;"><i class="fa-solid fa-graduation-cap"></i></div>
+                        Student Toolkit
+                    </a>
+                    <a href="boolean-logic.html">
+                        <div class="dropdown-icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;"><i class="fa-solid fa-diagram-project"></i></div>
+                        Boolean Logic Lab
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <div class="nav-actions">
+            <button class="btn btn-primary" onclick="window.location.href='student-home.html'">Student Toolkit</button>
+        </div>
+        <div class="nav-toggle" id="navToggle" onclick="toggleNav()">
+            <span></span><span></span><span></span>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTENT -->
+    <main style="max-width:1300px; margin:0 auto 3rem; padding-top: 7rem;">
+        <header class="logic-hero">
+            <h1 class="hero-title animated-gradient-text" style="font-size:2.6rem;">Boolean Logic &amp; Digital Circuit Lab</h1>
+            <p class="muted">Enter an expression, generate truth tables, simplify, view diagrams, K-maps, and practice with quizzes.</p>
+        </header>
+
+        <section class="logic-grid">
+            <article class="logic-card">
+                <h3>Expression</h3>
+                <input id="expr" type="text" placeholder="e.g. (A + B')*(A + C)" value="(A + B')*(A + C)">
+                <div class="btn-row">
+                    <button onclick="runAll()"><i class="fa-solid fa-bolt"></i> Run All</button>
+                    <button onclick="generateTruthTable()">Generate Truth Table</button>
+                    <button onclick="simplifyExpression()">Simplify</button>
+                    <button onclick="drawDiagram()">Draw Logic Diagram</button>
+                    <button onclick="showKmap()">Show K-map</button>
+                </div>
+                <p class="muted" style="margin-top:0.5rem;">Operators: <code>+</code> OR, <code>*</code> or <code>·</code> AND, <code>'</code> or <code>!</code> NOT. Variables A–D recommended.</p>
+            </article>
+
+            <article class="logic-card" id="truth-card">
+                <h3>Truth Table</h3>
+                <div id="truth-table" class="muted">Run to see results.</div>
+            </article>
+
+            <article class="logic-card">
+                <h3>Simplification</h3>
+                <div id="simplified" class="muted">Run to see simplified form.</div>
+            </article>
+
+            <article class="logic-card">
+                <h3>Logic Diagram</h3>
+                <div id="diagram" class="muted">Run to visualize gates.</div>
+            </article>
+
+            <article class="logic-card">
+                <h3>Karnaugh Map</h3>
+                <div id="kmap" class="muted">Run to see K-map.</div>
+            </article>
+
+            <article class="logic-card">
+                <h3>Quiz Mode</h3>
+                <div id="quiz-expression" style="font-weight:700;">Press "New Quiz"</div>
+                <div class="quiz-box">
+                    <input id="quiz-answer" type="text" placeholder="Your simplified answer">
+                    <button onclick="checkQuiz()">Check</button>
+                    <button onclick="newQuiz()">New Quiz</button>
+                </div>
+                <div id="quiz-result" class="muted" style="margin-top:0.5rem;"></div>
+            </article>
+        </section>
+    </main>
+
+    <!-- FOOTER (copied from home) -->
+    <footer id="footer" style="background: var(--glass-panel); border-top: 1px solid var(--glass-border); padding: 2rem 2rem; margin-top: auto; z-index: 10;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
+                <div style="text-align: center;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-infinity" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">MathHub</h3>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; text-align: center;">Interactive mathematics and learning tools for modern enthusiasts.</p>
+                    <div class="footer-socials" style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="https://github.com/ravishkauniinfo-cloud/Mini-project.git" target="_blank" title="GitHub" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(100, 116, 139, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s ease;">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Contact & Support</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--btn-bg); border-radius: 10px; border: 1px solid var(--glass-border);">
+                        <i class="fa-solid fa-envelope" style="color: var(--primary); font-size: 1.2rem;"></i>
+                        <a href="mailto:ucsc.group13@gmail.com" style="color: var(--text-main); text-decoration: none; font-weight: 500;">ucsc.group13@gmail.com</a>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Have questions or feedback? Let us know! We're here to help you learn and succeed.</p>
+                </div>
+
+                <div>
+                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; font-weight: 600; color: var(--text-main);">Stay Updated</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">Subscribe to our newsletter for the latest updates and features.</p>
+                    <form id="newsletter-form" style="display: flex; gap: 0.5rem; flex-direction: column;" onsubmit="handleNewsletterSubscribe(event)">
+                        <input type="email" id="newsletter-email" placeholder="Enter your email" required style="padding: 0.75rem; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--btn-bg); color: var(--text-main); font-size: 0.95rem;">
+                        <button type="submit" id="newsletter-btn" class="btn" style="padding: 0.75rem 1.5rem; font-weight: 600;">
+                            <i class="fa-solid fa-bell" style="margin-right: 0.5rem;"></i> Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div style="height: 1px; background: var(--glass-border); margin-bottom: 2rem;"></div>
+            <div style="text-align: center; ">
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">&copy; 2026 MathHub. All rights reserved. Designed for interactive learning.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+// --- Parsing helpers ---
+function tokenize(expr) {
+  return expr.toUpperCase().replace(/\s+/g, '').replace(/·/g, '*').split(/(?=[()+*'!])|(?<=[()+*'!])/).filter(Boolean);
+}
+function applyPostfixNot(tokens) {
+  const out = []; for (const t of tokens) { if (t === "'") { const prev = out.pop(); if (!prev) continue; out.push('(!' + wrap(prev) + ')'); } else { out.push(t); } } return out; }
+function wrap(tok) { return /^[A-Z]$/.test(tok) ? tok : `(${tok})`; }
+function toJsTokens(tokens) { return tokens.map(t => t==='+'?'||': t==='*'?'&&': t); }
+function normalizeExpression(expr) { return toJsTokens(applyPostfixNot(tokenize(expr))).join(''); }
+function extractVariables(expr) { const set = new Set((expr.match(/[A-Z]/g) || []).slice(0,4)); return Array.from(set).sort(); }
+function buildEvaluator(expr) { const jsExpr = normalizeExpression(expr); const vars = extractVariables(expr); const fn = new Function(...vars, `return Number(${jsExpr});`); return { fn, vars, jsExpr }; }
+
+function generateTruthTable() {
+  const expr = document.getElementById('expr').value; try {
+    const { fn, vars } = buildEvaluator(expr); const combos = 1 << vars.length; let html = '<table><thead><tr>' + vars.map(v=>`<th>${v}</th>`).join('') + '<th>Z</th></tr></thead><tbody>'; const minterms = [];
+    for (let i=0;i<combos;i++) { const bits = vars.map((_, idx)=> (i >> (vars.length-idx-1)) & 1); const out = fn(...bits); if (out) minterms.push(i); html += '<tr>' + bits.map(b=>`<td>${b}</td>`).join('') + `<td>${out}</td></tr>`; }
+    html += '</tbody></table>'; document.getElementById('truth-table').innerHTML = html; document.getElementById('truth-table').dataset.minterms = JSON.stringify(minterms); document.getElementById('truth-table').dataset.varcount = vars.length; return { minterms, vars };
+  } catch (e) { document.getElementById('truth-table').innerHTML = `<span style="color:#f87171;">Error: ${e.message}</span>`; return null; }
+}
+
+function qmSimplify(minterms, varCount) {
+  if (!minterms || minterms.length===0) return {expr:'0', steps:['No minterms (function is 0).']}; const all = 1 << varCount; if (minterms.length === all) return {expr:'1', steps:['All minterms present (function is 1).']};
+  const toBinary = n => n.toString(2).padStart(varCount,'0'); let groups = {}; minterms.forEach(m=>{ const ones = toBinary(m).replace(/0/g,'').length; (groups[ones] ||= []).push({bits: toBinary(m), minterms:[m], combined:false}); });
+  const steps = ['Initial groups: ' + JSON.stringify(groups)]; let primes = []; let changed = true; while (changed) { changed = false; const next = {}; const keys = Object.keys(groups).map(Number).sort((a,b)=>a-b); for (let kIdx=0;kIdx<keys.length-1;kIdx++) { const a = groups[keys[kIdx]] || []; const b = groups[keys[kIdx+1]] || []; for (const pa of a) for (const pb of b) { let diff=0, merged=''; for (let i=0;i<varCount;i++) { if (pa.bits[i]===pb.bits[i]) merged += pa.bits[i]; else { diff++; merged += '-'; } } if (diff===1) { changed = true; pa.combined = pb.combined = true; const ones = merged.replace(/1/g,'1').replace(/-/g,'').length; if (!next[ones]) next[ones]=[]; if (!next[ones].some(x=>x.bits===merged)) next[ones].push({bits: merged, minterms:[...new Set([...pa.minterms,...pb.minterms])], combined:false}); } } } primes.push(...keys.flatMap(k => (groups[k]||[]).filter(p=>!p.combined))); groups = next; }
+  steps.push('Prime implicants: ' + primes.map(p=>p.bits+':'+p.minterms.join(',')).join(' | '));
+  const chart = {}; minterms.forEach(m=>{ chart[m]=[]; }); primes.forEach((p, idx)=>{ p.minterms.forEach(m=> chart[m].push(idx)); }); const essentialIdx = new Set(); Object.entries(chart).forEach(([m, arr])=>{ if (arr.length===1) essentialIdx.add(arr[0]); }); steps.push('Essential implicants: ' + Array.from(essentialIdx).join(','));
+  const implicantToExpr = bits => { const vars = ['A','B','C','D']; let parts=[]; for (let i=0;i<bits.length;i++) { if (bits[i]==='-') continue; parts.push(bits[i]==='1'? vars[i]: vars[i] + "'"); } return parts.join(''); };
+  let finalSet = Array.from(essentialIdx); if (finalSet.length===0) finalSet = primes.map((_,i)=>i); const expr = finalSet.map(i=> implicantToExpr(primes[i].bits)).filter(Boolean).join(' + ') || '0'; steps.push('Final SOP: ' + expr); return {expr, steps};
+}
+
+function simplifyExpression() { const truth = generateTruthTable(); if (!truth) return; const { minterms, vars } = truth; const { expr, steps } = qmSimplify(minterms, vars.length); document.getElementById('simplified').innerHTML = `<div><strong>Simplified (SOP):</strong> Z = ${expr || '0'}</div><pre>${steps.join('\n')}</pre>`; return expr; }
+
+function toPostfix(expr) { const tokens = tokenize(expr.toUpperCase().replace(/·/g,'*')); const out=[]; const ops=[]; const prec = {"!":3, "'":3, "*":2, "+":1}; for (let i=0;i<tokens.length;i++) { let t=tokens[i]; if (t==="'") { out.push('!'); continue; } if (/^[A-Z]$/.test(t)) out.push(t); else if (t==='!') { while (ops.length && prec[ops.at(-1)]>prec['!']) out.push(ops.pop()); ops.push('!'); } else if (t==='+' || t==='*') { while (ops.length && prec[ops.at(-1)]>=prec[t]) out.push(ops.pop()); ops.push(t); } else if (t==='(') ops.push(t); else if (t===')') { while (ops.length && ops.at(-1)!=='(') out.push(ops.pop()); ops.pop(); } } while (ops.length) out.push(ops.pop()); return out; }
+function postfixToTree(post) { const stack=[]; for (const t of post) { if (t==='!' ) { const a=stack.pop(); stack.push({type:'NOT', children:[a]}); } else if (t==='+' || t==='*') { const b=stack.pop(), a=stack.pop(); stack.push({type: t==='+'?'OR':'AND', children:[a,b]}); } else stack.push({type:'VAR', value:t}); } return stack.pop(); }
+function renderTree(node) { if (!node) return ''; if (node.type==='VAR') return `<div class="gate">${node.value}</div>`; if (node.type==='NOT') return `<div class="gate">NOT</div><div style="margin-left:12px;">${renderTree(node.children[0])}</div>`; return `<div class="gate">${node.type}</div><div style="display:flex; gap:12px; margin-left:12px;">${node.children.map(renderTree).join('')}</div>`; }
+function drawDiagram() { try { const expr = document.getElementById('expr').value; const post = toPostfix(expr); const tree = postfixToTree(post); document.getElementById('diagram').innerHTML = `<div class="diagram">${renderTree(tree)}</div>`; } catch (e) { document.getElementById('diagram').innerHTML = `<span style="color:#f87171;">${e.message}</span>`; } }
+
+function showKmap() { const truth = generateTruthTable(); if (!truth) return; const { minterms, vars } = truth; const n = vars.length; if (n<2 || n>4) { document.getElementById('kmap').innerHTML = 'K-map supported for 2-4 variables.'; return; } const gray = n===2? ['00','01','11','10'] : ['00','01','11','10']; const rows = n===4 ? ['00','01','11','10'] : (n===3? ['0','1']: ['']); let html = '<div class="kmap" style="grid-template-columns: repeat(' + (gray.length+1) + ', 1fr);">'; html += '<div></div>' + gray.map(g=>`<div class="kcell">${g}</div>`).join(''); for (const r of rows) { html += `<div class="kcell">${r}</div>`; for (const c of gray) { const bits = (r + c).padStart(n,'0'); const idx = parseInt(bits,2); const on = minterms.includes(idx); html += `<div class="kcell ${on?'on':''}">${on?1:0}</div>`; } } html += '</div>'; document.getElementById('kmap').innerHTML = html; }
+
+function randomExpr() { const vars=['A','B','C']; const pick=()=>vars[Math.floor(Math.random()*vars.length)]; const ops=['+','*']; const maybeNot=v=> Math.random()<0.4? `${v}'`: v; const term=()=> maybeNot(pick()); const expr=`(${term()} ${ops[Math.floor(Math.random()*2)]} ${term()}) + ${maybeNot(pick())}`; return expr; }
+function newQuiz() { const expr=randomExpr(); document.getElementById('quiz-expression').textContent=expr; document.getElementById('quiz-result').textContent=''; document.getElementById('quiz-answer').value=''; }
+function checkQuiz() { const expr=document.getElementById('quiz-expression').textContent; const user=document.getElementById('quiz-answer').value; const truth = buildEvaluator(expr); const userTruth = buildEvaluator(user || '0'); const vars = Array.from(new Set([...truth.vars, ...userTruth.vars])).sort(); const combos = 1<<vars.length; let same=true; for (let i=0;i<combos;i++) { const bits = vars.map((_,idx)=>(i>>(vars.length-idx-1))&1); const expect = truth.fn(...bits.slice(-truth.vars.length)); const got = userTruth.fn(...bits.slice(-userTruth.vars.length)); if (expect!==got) { same=false; break; } } document.getElementById('quiz-result').textContent = same? 'Correct!': 'Not quite, try again.'; }
+
+function runAll() { generateTruthTable(); simplifyExpression(); drawDiagram(); showKmap(); }
+newQuiz(); runAll();
+</script>
+</body>
+</html>
