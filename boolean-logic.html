@@ -14,6 +14,9 @@
         body { color: var(--text-main); }
         .logic-hero { text-align:center; padding:3rem 1rem 2rem; }
         .logic-grid { max-width:1200px; margin:0 auto; display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); padding:0 1rem 3rem; }
+        @supports (display: grid) {
+            .logic-grid > :has(#diagram) { grid-column: 1 / -1; order: 999; margin-top: 2rem; }
+        }
         .logic-card { background: var(--panel); border:1px solid var(--border); border-radius:18px; padding:1.5rem; backdrop-filter: blur(12px); box-shadow:0 20px 45px rgba(0,0,0,0.25); }
         .logic-card h3 { margin-top:0; margin-bottom:0.75rem; }
         textarea, input[type="text"], input[type="number"] { width:100%; padding:0.75rem 1rem; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.15); color:var(--text-main); }
@@ -24,14 +27,220 @@
         th, td { border:1px solid var(--border); padding:0.5rem; text-align:center; }
         th { background: rgba(255,255,255,0.05); }
         pre { background: rgba(0,0,0,0.25); padding:0.75rem; border-radius:12px; overflow:auto; }
-        .kmap { display:grid; gap:6px; margin-top:0.75rem; }
-        .kcell { padding:0.5rem; border:1px solid var(--border); border-radius:10px; text-align:center; background:rgba(255,255,255,0.05); }
-        .kcell.on { background:linear-gradient(135deg,#10b98155,#3b82f655); border-color:#10b981aa; }
-        .diagram { display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; }
-        .gate { display:inline-block; padding:0.4rem 0.7rem; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.07); }
+        .kmap {
+            display: grid;
+            gap: 10px;
+            margin-top: 1rem;
+            align-items: stretch;
+            justify-items: stretch;
+            row-gap: 8px;
+            column-gap: 10px;
+        }
+        .kcorner {
+            position: relative;
+            min-height: 45px;
+            min-width: 45px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(200, 180, 255, 0.2), rgba(220, 150, 255, 0.15));
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .kcorner::before {
+            content: '';
+            position: absolute;
+            left: -10%;
+            top: 50%;
+            width: 130%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--border), transparent);
+            transform: rotate(42deg);
+            transform-origin: center;
+        }
+        .krowvars {
+            position: absolute;
+            left: 12px;
+            bottom: 8px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+        .kcolvars {
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+        .khdr {
+            padding: 0.4rem 0.3rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            color: var(--text-main);
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .kcell {
+            padding: 0.4rem;
+            border: 2px solid rgba(200, 200, 255, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(150, 150, 180, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+        }
+        .kcell.on {
+            background: linear-gradient(135deg, #14b8a655, #06b6d455);
+            border-color: #14b8a6cc;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+        .diagram { margin-top:0.5rem; overflow:auto; }
+        .diagram-wrap { min-width: 720px; }
+        .diagram-viewport {
+            overflow: auto;
+            cursor: grab;
+            user-select: none;
+            border-radius: 12px;
+        }
+        .diagram-viewport.panning { cursor: grabbing; }
+        .diagram-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:0.6rem; }
+        .diagram-toolbar .zoom-pill { padding:0.25rem 0.55rem; border-radius:999px; border:1px solid var(--border); font-size:0.82rem; color:var(--text-muted); }
+        .zoom-surface { width:max-content; transform-origin: top left; transition: transform 0.18s ease; display:inline-block; }
+        .gate-legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:0.8rem; }
+        .legend-chip {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            padding:0.35rem 0.55rem;
+            border-radius:10px;
+            border:1px solid var(--border);
+            background:rgba(255,255,255,0.06);
+            font-size:0.85rem;
+            color:var(--text-muted);
+        }
+        .legend-chip svg { width:34px; height:24px; }
+        .logic-svg {
+            width:100%;
+            min-width:720px;
+            border-radius:14px;
+            border:2px solid rgba(0, 150, 255, 0.5);
+            background:linear-gradient(135deg, rgb(12, 22, 48), rgb(18, 28, 55));
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+        }
+        [data-theme="light"] .logic-svg {
+            background:linear-gradient(135deg, rgb(250, 253, 255), rgb(245, 250, 255));
+            border:2px solid rgba(0, 102, 204, 0.4);
+            box-shadow: 0 0 15px rgba(0, 102, 204, 0.2);
+        }
+        .logic-wire { stroke: #00aaff; stroke-width:2.8; fill:none; filter: drop-shadow(0 0 4px rgba(0, 170, 255, 0.7)); }
+        .logic-wire-strong { stroke: #00cc00; stroke-width:3; fill:none; filter: drop-shadow(0 0 5px rgba(0, 204, 0, 0.8)); }
+        .gate-shape { fill: rgba(100, 180, 255, 0.15); stroke: #0066ff; stroke-width:2.4; filter: drop-shadow(0 0 3px rgba(0, 102, 255, 0.6)); }
+        .label-bg { fill: rgba(0, 80, 180, 0.8); rx: 6; ry: 6; }
+        .gate-label { fill: rgba(255, 255, 255, 1); font-size:18px; font-weight:900; text-anchor:middle; }
+        .var-label { fill: rgba(255, 255, 255, 1); font-size:16px; font-weight:900; text-anchor:middle; }
+        [data-theme="light"] .logic-wire { stroke: #0077cc; stroke-width:2.8; filter: drop-shadow(0 0 3px rgba(0, 119, 204, 0.6)); }
+        [data-theme="light"] .logic-wire-strong { stroke: #00aa00; stroke-width:3; filter: drop-shadow(0 0 3px rgba(0, 170, 0, 0.6)); }
+        [data-theme="light"] .gate-shape { fill: rgba(100, 150, 255, 0.15); stroke: #0055dd; stroke-width:2.4; }
+        [data-theme="light"] .label-bg { fill: rgba(255, 255, 255, 1); }
+        [data-theme="light"] .gate-label { fill: rgba(0, 40, 100, 1); }
+        [data-theme="light"] .var-label { fill: rgba(0, 40, 100, 1); }
         .quiz-box { display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem; }
         .muted { color: var(--text-muted); }
         code { background: rgba(255,255,255,0.07); padding:0.15rem 0.35rem; border-radius:6px; }
+        .mode-row { display:grid; grid-template-columns: minmax(180px, 1fr) auto; gap:0.6rem; margin-top:0.7rem; }
+        .mode-row select { width:100%; padding:0.68rem 0.85rem; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.15); color:var(--text-main); font-weight:600; }
+        .bool-formula { font-size:1.05rem; font-weight:700; line-height:1.5; color:var(--text-main); }
+        .bool-formula .op { padding:0 0.18rem; }
+        .bool-overline { text-decoration: overline; text-decoration-thickness: 1.5px; }
+        .bool-group { display:inline-block; }
+        .walkthrough-card { grid-column: 1 / -1; }
+        .walkthrough { display:grid; gap:0.85rem; }
+        .walkthrough-summary {
+            padding:0.9rem 1rem;
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:14px;
+            background:rgba(255,255,255,0.05);
+        }
+        .walkthrough-split {
+            display:grid;
+            grid-template-columns:repeat(2, minmax(0, 1fr));
+            gap:1rem;
+        }
+        .method-panel {
+            padding:1rem;
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:16px;
+            background:rgba(255,255,255,0.035);
+        }
+        .method-panel h4 {
+            margin:0 0 0.8rem;
+            font-size:1rem;
+            font-weight:800;
+            color:var(--text-main);
+        }
+        .method-panel .step-line + .step-line {
+            margin-top:0.8rem;
+        }
+        .step-line {
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:1rem;
+            padding:0.85rem 1rem;
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:14px;
+            background:rgba(255,255,255,0.04);
+        }
+        .step-copy { flex:1; min-width:0; }
+        .step-copy strong { display:block; margin-bottom:0.2rem; }
+        .step-law {
+            flex:0 0 220px;
+            text-align:right;
+            color:var(--text-muted);
+            font-size:0.86rem;
+            font-style:italic;
+        }
+        .step-meta {
+            margin-top:0.35rem;
+            color:var(--text-muted);
+            font-size:0.92rem;
+        }
+        .step-formula {
+            margin-top:0.45rem;
+            padding:0.7rem 0.85rem;
+            border-radius:12px;
+            background:rgba(99,102,241,0.1);
+            border:1px solid rgba(99,102,241,0.16);
+        }
+        @media (max-width: 720px) {
+            .walkthrough-split {
+                grid-template-columns:1fr;
+            }
+            .step-line {
+                flex-direction:column;
+            }
+            .step-law {
+                flex:0 0 auto;
+                width:100%;
+                text-align:left;
+            }
+        }
     </style>
 </head>
 <body>
@@ -258,12 +467,21 @@
             <article class="logic-card">
                 <h3>Expression</h3>
                 <input id="expr" type="text" placeholder="e.g. (A + B')*(A + C)" value="(A + B')*(A + C)">
+                <div class="mode-row">
+                    <select id="logic-mode" onchange="runAll()" aria-label="Logic mode">
+                        <option value="expr">Expression Mode</option>
+                        <option value="nand">NAND Only</option>
+                        <option value="nor">NOR Only</option>
+                    </select>
+                    <button onclick="setModePreset()"><i class="fa-solid fa-filter-circle-xmark"></i> Apply Mode</button>
+                </div>
                 <div class="btn-row">
                     <button onclick="runAll()"><i class="fa-solid fa-bolt"></i> Run All</button>
                     <button onclick="generateTruthTable()">Generate Truth Table</button>
-                    <button onclick="simplifyExpression()">Simplify</button>
-                    <button onclick="drawDiagram()">Draw Logic Diagram</button>
-                    <button onclick="showKmap()">Show K-map</button>
+                </div>
+                <div class="btn-row">
+                    <button onclick="setGateOnly('nand')">NAND Gate Only</button>
+                    <button onclick="setGateOnly('nor')">NOR Gate Only</button>
                 </div>
                 <p class="muted" style="margin-top:0.5rem;">Operators: <code>+</code> OR, <code>*</code> or <code>·</code> AND, <code>'</code> or <code>!</code> NOT. Variables A–D recommended.</p>
             </article>
@@ -278,8 +496,19 @@
                 <div id="simplified" class="muted">Run to see simplified form.</div>
             </article>
 
+            <article class="logic-card walkthrough-card">
+                <h3>How It Was Simplified</h3>
+                <div id="simplify-steps" class="muted">Run to see step-by-step SOP or POS simplification from the truth table.</div>
+            </article>
+
             <article class="logic-card">
                 <h3>Logic Diagram</h3>
+                <div class="diagram-toolbar">
+                    <button onclick="zoomDiagram(1.2)"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom In</button>
+                    <button onclick="zoomDiagram(1/1.2)"><i class="fa-solid fa-magnifying-glass-minus"></i> Zoom Out</button>
+                    <button onclick="resetDiagramZoom()"><i class="fa-solid fa-arrows-rotate"></i> Reset</button>
+                    <span class="zoom-pill" id="diagram-zoom-value">100%</span>
+                </div>
                 <div id="diagram" class="muted">Run to visualize gates.</div>
             </article>
 
@@ -355,35 +584,955 @@ function applyPostfixNot(tokens) {
 function wrap(tok) { return /^[A-Z]$/.test(tok) ? tok : `(${tok})`; }
 function toJsTokens(tokens) { return tokens.map(t => t==='+'?'||': t==='*'?'&&': t); }
 function normalizeExpression(expr) { return toJsTokens(applyPostfixNot(tokenize(expr))).join(''); }
-function extractVariables(expr) { const set = new Set((expr.match(/[A-Z]/g) || []).slice(0,4)); return Array.from(set).sort(); }
+function extractVariables(expr) { const set = new Set(expr.match(/[A-Z]/g) || []); return Array.from(set).sort().slice(0, 4); }
 function buildEvaluator(expr) { const jsExpr = normalizeExpression(expr); const vars = extractVariables(expr); const fn = new Function(...vars, `return Number(${jsExpr});`); return { fn, vars, jsExpr }; }
+let diagramZoom = 1;
+let diagramPanX = 0;
+let diagramPanY = 0;
+let diagramPanning = false;
+let diagramPanStartX = 0;
+let diagramPanStartY = 0;
+let diagramAutoFitWidth = 0;
+let diagramAutoFitHeight = 0;
+let lastSimplifiedExpr = null;
+let lastSimplifiedDisplayExpr = null;
+let lastPreferredGateTree = null;
+let lastPreferredGateMode = null;
+
+function getLogicMode() {
+    const modeEl = document.getElementById('logic-mode');
+    return modeEl ? modeEl.value : 'expr';
+}
+
+function cloneTree(node) {
+    if (!node) return null;
+    return {
+        ...node,
+        children: (node.children || []).map(cloneTree)
+    };
+}
+
+function treeSignature(node) {
+    if (!node) return '';
+    if (node.type === 'VAR') return `VAR:${node.value}`;
+    const kids = (node.children || []).map(treeSignature).join(',');
+    return `${node.type}(${kids})`;
+}
+
+function treesEqual(a, b) {
+    return treeSignature(a) === treeSignature(b);
+}
+
+function simplifyGateNetwork(node) {
+    if (!node) return null;
+    if (node.type === 'VAR') return { type: 'VAR', value: node.value };
+    const kids = (node.children || []).map(simplifyGateNetwork);
+    let cur = { ...node, children: kids };
+
+    // Involution law in gate-only form:
+    // NAND(NAND(X,X), NAND(X,X)) = X
+    // NOR(NOR(X,X), NOR(X,X)) = X
+    if ((cur.type === 'NAND' || cur.type === 'NOR') && kids.length === 2 && treesEqual(kids[0], kids[1])) {
+        const inner = kids[0];
+        if (inner && inner.type === cur.type && inner.children && inner.children.length === 2 && treesEqual(inner.children[0], inner.children[1])) {
+            return cloneTree(inner.children[0]);
+        }
+    }
+    return cur;
+}
+
+function optimizeGateNetwork(node) {
+    let current = cloneTree(node);
+    let prevSig = '';
+    while (true) {
+        const next = simplifyGateNetwork(current);
+        const nextSig = treeSignature(next);
+        if (nextSig === prevSig) return next;
+        prevSig = nextSig;
+        current = next;
+    }
+}
+
+function nandNode(left, right) {
+    return { type: 'NAND', children: [left, right] };
+}
+
+function norNode(left, right) {
+    return { type: 'NOR', children: [left, right] };
+}
+
+function toNandOnlyTree(node) {
+    if (!node) return null;
+    if (node.type === 'VAR') return { type: 'VAR', value: node.value };
+
+    if (node.type === 'NOT') {
+        const inner = toNandOnlyTree(node.children[0]);
+        return nandNode(cloneTree(inner), cloneTree(inner));
+    }
+
+    if (node.type === 'AND') {
+        const left = toNandOnlyTree(node.children[0]);
+        const right = toNandOnlyTree(node.children[1]);
+        const merged = nandNode(left, right);
+        return nandNode(cloneTree(merged), cloneTree(merged));
+    }
+
+    if (node.type === 'OR') {
+        const left = toNandOnlyTree(node.children[0]);
+        const right = toNandOnlyTree(node.children[1]);
+        return nandNode(nandNode(cloneTree(left), cloneTree(left)), nandNode(cloneTree(right), cloneTree(right)));
+    }
+
+    return cloneTree(node);
+}
+
+function toNorOnlyTree(node) {
+    if (!node) return null;
+    if (node.type === 'VAR') return { type: 'VAR', value: node.value };
+
+    if (node.type === 'NOT') {
+        const inner = toNorOnlyTree(node.children[0]);
+        return norNode(cloneTree(inner), cloneTree(inner));
+    }
+
+    if (node.type === 'OR') {
+        const left = toNorOnlyTree(node.children[0]);
+        const right = toNorOnlyTree(node.children[1]);
+        const merged = norNode(left, right);
+        return norNode(cloneTree(merged), cloneTree(merged));
+    }
+
+    if (node.type === 'AND') {
+        const left = toNorOnlyTree(node.children[0]);
+        const right = toNorOnlyTree(node.children[1]);
+        return norNode(norNode(cloneTree(left), cloneTree(left)), norNode(cloneTree(right), cloneTree(right)));
+    }
+
+    return cloneTree(node);
+}
+
+function treeToGateExpression(node) {
+    if (!node) return '';
+    if (node.type === 'VAR') return node.value;
+    return `${node.type}(${(node.children || []).map(treeToGateExpression).join(', ')})`;
+}
+
+function treeToInfixGateExpression(node) {
+    if (!node) return '';
+    if (node.type === 'VAR') return node.value;
+    const children = node.children || [];
+    if (children.length === 1) return `${node.type}(${treeToInfixGateExpression(children[0])})`;
+    if (children.length === 2 && (node.type === 'NAND' || node.type === 'NOR')) {
+        const left = treeToInfixGateExpression(children[0]);
+        const right = treeToInfixGateExpression(children[1]);
+        return `((${left}) ${node.type} (${right}))`;
+    }
+    return `${node.type}(${children.map(treeToInfixGateExpression).join(', ')})`;
+}
+
+function treeToStandardFormula(node) {
+    if (!node) return '';
+    if (node.type === 'VAR') return node.value;
+    if (node.type === 'NOT') {
+        const inner = treeToStandardFormula(node.children[0]);
+        return `(${inner})'`;
+    }
+    if (node.type === 'AND') {
+        const left = treeToStandardFormula(node.children[0]);
+        const right = treeToStandardFormula(node.children[1]);
+        return `(${left}*${right})`;
+    }
+    if (node.type === 'OR') {
+        const left = treeToStandardFormula(node.children[0]);
+        const right = treeToStandardFormula(node.children[1]);
+        return `(${left}+${right})`;
+    }
+    if (node.type === 'NAND') {
+        const left = treeToStandardFormula(node.children[0]);
+        const right = treeToStandardFormula(node.children[1]);
+        return `(((${left})*(${right})))'`;
+    }
+    if (node.type === 'NOR') {
+        const left = treeToStandardFormula(node.children[0]);
+        const right = treeToStandardFormula(node.children[1]);
+        return `(((${left})+(${right})))'`;
+    }
+    return node.type;
+}
+
+function treeToFormulaHtml(node, parentType) {
+    if (!node) return '';
+    if (node.type === 'VAR') return `<span>${node.value}</span>`;
+    if (node.type === 'NOT') {
+        const child = node.children[0];
+        if (child.type === 'VAR') return `<span>${child.value}'</span>`;
+        return `<span class="bool-group">(${treeToFormulaHtml(child)})'</span>`;
+    }
+    if (node.type === 'AND') {
+        const left = treeToFormulaHtml(node.children[0], 'AND');
+        const right = treeToFormulaHtml(node.children[1], 'AND');
+        return `<span class="bool-group">${left}<span class="op">&middot;</span>${right}</span>`;
+    }
+    if (node.type === 'OR') {
+        const left = treeToFormulaHtml(node.children[0], 'OR');
+        const right = treeToFormulaHtml(node.children[1], 'OR');
+        const inner = `${left}<span class="op">+</span>${right}`;
+        return parentType === 'AND'
+            ? `<span class="bool-group">(${inner})</span>`
+            : `<span class="bool-group">${inner}</span>`;
+    }
+    if (node.type === 'NAND') {
+        const c0 = node.children[0], c1 = node.children[1];
+        // NAND(X,X) = X' — simplify visually
+        if (c0.type === 'VAR' && c1.type === 'VAR' && c0.value === c1.value)
+            return `<span>${c0.value}'</span>`;
+        const left = treeToFormulaHtml(c0, 'AND');
+        const right = treeToFormulaHtml(c1, 'AND');
+        return `<span class="bool-group">(${left}<span class="op">&middot;</span>${right})'</span>`;
+    }
+    if (node.type === 'NOR') {
+        const c0 = node.children[0], c1 = node.children[1];
+        // NOR(X,X) = X' — simplify visually
+        if (c0.type === 'VAR' && c1.type === 'VAR' && c0.value === c1.value)
+            return `<span>${c0.value}'</span>`;
+        const left = treeToFormulaHtml(c0, 'OR');
+        const right = treeToFormulaHtml(c1, 'OR');
+        return `<span class="bool-group">(${left}<span class="op">+</span>${right})'</span>`;
+    }
+    return `<span>${node.type}</span>`;
+}
+
+function expressionTextToFormulaHtml(expr) {
+    const tree = parseExpressionTreeFromText(expr);
+    if (!tree) return expr;
+    return treeToFormulaHtml(tree);
+}
+
+function countGateNodes(node) {
+    if (!node) return 0;
+    if (node.type === 'VAR') return 0;
+    return 1 + (node.children || []).reduce((sum, child) => sum + countGateNodes(child), 0);
+}
+
+function parseCurrentExpressionTree() {
+    const expr = document.getElementById('expr').value;
+    const post = toPostfix(expr);
+    return postfixToTree(post);
+}
+
+function parseExpressionTreeFromText(expr) {
+    if (!expr || expr === '0' || expr === '1') return null;
+    const post = toPostfix(expr);
+    return postfixToTree(post);
+}
+
+function getCurrentTruthData() {
+    const expr = document.getElementById('expr').value;
+    const { fn, vars } = buildEvaluator(expr);
+    const combos = 1 << vars.length;
+    const minterms = [];
+
+    for (let i = 0; i < combos; i++) {
+        const bits = vars.map((_, idx) => (i >> (vars.length - idx - 1)) & 1);
+        const out = fn(...bits);
+        if (out) minterms.push(i);
+    }
+
+    return { minterms, vars };
+}
+
+function parseSimplifiedExpressionTree() {
+    if (lastSimplifiedExpr) return parseExpressionTreeFromText(lastSimplifiedExpr);
+    const { minterms, vars } = getCurrentTruthData();
+    const simplified = qmSimplify(minterms, vars.length, vars).expr;
+    return parseExpressionTreeFromText(simplified);
+}
+
+function buildImplementationTree(mode) {
+    const parsedTree = mode === 'expr' ? parseCurrentExpressionTree() : parseSimplifiedExpressionTree();
+    if (mode === 'nand' || mode === 'nor') {
+        if (lastPreferredGateTree && lastPreferredGateMode === mode) return cloneTree(lastPreferredGateTree);
+        const converted = mode === 'nand'
+            ? (parsedTree ? toNandOnlyTree(parsedTree) : null)
+            : (parsedTree ? toNorOnlyTree(parsedTree) : null);
+        return converted ? optimizeGateNetwork(converted) : null;
+    }
+    return convertToNamedGates(parsedTree);
+}
+
+function getEvaluatorByMode() {
+    const mode = getLogicMode();
+    const expr = document.getElementById('expr').value;
+    const evaluated = buildEvaluator(expr);
+    const label = mode === 'nand'
+        ? 'Equivalent NAND-only truth table for the typed expression'
+        : mode === 'nor'
+            ? 'Equivalent NOR-only truth table for the typed expression'
+            : 'Expression truth table';
+    return { mode, ...evaluated, label };
+}
+
+function setModePreset() {
+    runAll();
+}
+
+function setGateOnly(type) {
+    const modeEl = document.getElementById('logic-mode');
+    if (modeEl) modeEl.value = type;
+    runAll();
+}
+
+function applyDiagramZoom() {
+    const zoomRoot = document.getElementById('logic-svg-root');
+    const label = document.getElementById('diagram-zoom-value');
+    if (zoomRoot) zoomRoot.style.transform = `translate(${diagramPanX}px, ${diagramPanY}px) scale(${diagramZoom})`;
+    if (label) label.textContent = `${Math.round(diagramZoom * 100)}%`;
+}
+
+function fitDiagramToViewport() {
+    const viewport = document.getElementById('diagram-viewport');
+    const svg = viewport ? viewport.querySelector('.logic-svg') : null;
+    if (!viewport || !svg) {
+        diagramZoom = 1;
+        diagramPanX = 0;
+        diagramPanY = 0;
+        applyDiagramZoom();
+        return;
+    }
+
+    const viewBox = svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal : null;
+    const sourceWidth = viewBox && viewBox.width ? viewBox.width : (diagramAutoFitWidth || svg.getBoundingClientRect().width || 1);
+    const sourceHeight = viewBox && viewBox.height ? viewBox.height : (diagramAutoFitHeight || svg.getBoundingClientRect().height || 1);
+    const availableWidth = Math.max(120, viewport.clientWidth - 24);
+    const widthScale = availableWidth / sourceWidth;
+
+    diagramZoom = Math.max(0.25, Math.min(2.4, widthScale));
+
+    const scaledWidth = sourceWidth * diagramZoom;
+    const scaledHeight = sourceHeight * diagramZoom;
+    diagramPanX = Math.max(0, (viewport.clientWidth - scaledWidth) / 2);
+    diagramPanY = Math.max(8, (viewport.clientHeight - scaledHeight) / 2);
+    applyDiagramZoom();
+}
+
+function zoomDiagram(factor) {
+    diagramZoom = Math.max(0.25, Math.min(2.4, diagramZoom * factor));
+    applyDiagramZoom();
+}
+
+function resetDiagramZoom() {
+    fitDiagramToViewport();
+}
+
+function handleDiagramWheel(event) {
+    event.preventDefault();
+    const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
+    zoomDiagram(factor);
+}
+
+function startDiagramPan(event) {
+    if (event.button !== 0) return;
+    diagramPanning = true;
+    diagramPanStartX = event.clientX - diagramPanX;
+    diagramPanStartY = event.clientY - diagramPanY;
+    const viewport = document.getElementById('diagram-viewport');
+    if (viewport) viewport.classList.add('panning');
+}
+
+function moveDiagramPan(event) {
+    if (!diagramPanning) return;
+    diagramPanX = event.clientX - diagramPanStartX;
+    diagramPanY = event.clientY - diagramPanStartY;
+    applyDiagramZoom();
+}
+
+function endDiagramPan() {
+    diagramPanning = false;
+    const viewport = document.getElementById('diagram-viewport');
+    if (viewport) viewport.classList.remove('panning');
+}
 
 function generateTruthTable() {
-  const expr = document.getElementById('expr').value; try {
-    const { fn, vars } = buildEvaluator(expr); const combos = 1 << vars.length; let html = '<table><thead><tr>' + vars.map(v=>`<th>${v}</th>`).join('') + '<th>Z</th></tr></thead><tbody>'; const minterms = [];
+    try {
+        const { fn, vars, label } = getEvaluatorByMode(); const combos = 1 << vars.length; let html = `<div class="muted" style="margin-bottom:0.35rem;">${label}</div><table><thead><tr>` + vars.map(v=>`<th>${v}</th>`).join('') + '<th>Z</th></tr></thead><tbody>'; const minterms = [];
     for (let i=0;i<combos;i++) { const bits = vars.map((_, idx)=> (i >> (vars.length-idx-1)) & 1); const out = fn(...bits); if (out) minterms.push(i); html += '<tr>' + bits.map(b=>`<td>${b}</td>`).join('') + `<td>${out}</td></tr>`; }
     html += '</tbody></table>'; document.getElementById('truth-table').innerHTML = html; document.getElementById('truth-table').dataset.minterms = JSON.stringify(minterms); document.getElementById('truth-table').dataset.varcount = vars.length; return { minterms, vars };
   } catch (e) { document.getElementById('truth-table').innerHTML = `<span style="color:#f87171;">Error: ${e.message}</span>`; return null; }
 }
 
-function qmSimplify(minterms, varCount) {
-  if (!minterms || minterms.length===0) return {expr:'0', steps:['No minterms (function is 0).']}; const all = 1 << varCount; if (minterms.length === all) return {expr:'1', steps:['All minterms present (function is 1).']};
-  const toBinary = n => n.toString(2).padStart(varCount,'0'); let groups = {}; minterms.forEach(m=>{ const ones = toBinary(m).replace(/0/g,'').length; (groups[ones] ||= []).push({bits: toBinary(m), minterms:[m], combined:false}); });
-  const steps = ['Initial groups: ' + JSON.stringify(groups)]; let primes = []; let changed = true; while (changed) { changed = false; const next = {}; const keys = Object.keys(groups).map(Number).sort((a,b)=>a-b); for (let kIdx=0;kIdx<keys.length-1;kIdx++) { const a = groups[keys[kIdx]] || []; const b = groups[keys[kIdx+1]] || []; for (const pa of a) for (const pb of b) { let diff=0, merged=''; for (let i=0;i<varCount;i++) { if (pa.bits[i]===pb.bits[i]) merged += pa.bits[i]; else { diff++; merged += '-'; } } if (diff===1) { changed = true; pa.combined = pb.combined = true; const ones = merged.replace(/1/g,'1').replace(/-/g,'').length; if (!next[ones]) next[ones]=[]; if (!next[ones].some(x=>x.bits===merged)) next[ones].push({bits: merged, minterms:[...new Set([...pa.minterms,...pb.minterms])], combined:false}); } } } primes.push(...keys.flatMap(k => (groups[k]||[]).filter(p=>!p.combined))); groups = next; }
-  steps.push('Prime implicants: ' + primes.map(p=>p.bits+':'+p.minterms.join(',')).join(' | '));
-  const chart = {}; minterms.forEach(m=>{ chart[m]=[]; }); primes.forEach((p, idx)=>{ p.minterms.forEach(m=> chart[m].push(idx)); }); const essentialIdx = new Set(); Object.entries(chart).forEach(([m, arr])=>{ if (arr.length===1) essentialIdx.add(arr[0]); }); steps.push('Essential implicants: ' + Array.from(essentialIdx).join(','));
-  const implicantToExpr = bits => { const vars = ['A','B','C','D']; let parts=[]; for (let i=0;i<bits.length;i++) { if (bits[i]==='-') continue; parts.push(bits[i]==='1'? vars[i]: vars[i] + "'"); } return parts.join(''); };
-  let finalSet = Array.from(essentialIdx); if (finalSet.length===0) finalSet = primes.map((_,i)=>i); const expr = finalSet.map(i=> implicantToExpr(primes[i].bits)).filter(Boolean).join(' + ') || '0'; steps.push('Final SOP: ' + expr); return {expr, steps};
+function qmSimplify(minterms, varCount, variableNames) {
+    if (!minterms || minterms.length === 0) return {expr:'0', displayExpr:'0'};
+    const all = 1 << varCount;
+    if (minterms.length === all) return {expr:'1', displayExpr:'1'};
+    const vars = variableNames && variableNames.length ? variableNames : ['A','B','C','D'].slice(0, varCount);
+    const toBinary = n => n.toString(2).padStart(varCount, '0');
+
+    let groups = {};
+    minterms.forEach(m => {
+        const ones = toBinary(m).split('').filter(b => b === '1').length;
+        (groups[ones] ||= []).push({bits: toBinary(m), minterms:[m], combined:false});
+    });
+
+    let primes = [];
+    let changed = true;
+    while (changed) {
+        changed = false;
+        const next = {};
+        const keys = Object.keys(groups).map(Number).sort((a,b) => a-b);
+        for (let kIdx = 0; kIdx < keys.length-1; kIdx++) {
+            const groupA = groups[keys[kIdx]] || [];
+            const groupB = groups[keys[kIdx+1]] || [];
+            for (const pa of groupA) {
+                for (const pb of groupB) {
+                    let diff = 0, merged = '', valid = true;
+                    for (let i = 0; i < varCount; i++) {
+                        if (pa.bits[i] === pb.bits[i]) {
+                            merged += pa.bits[i];
+                        } else if (pa.bits[i] !== '-' && pb.bits[i] !== '-') {
+                            diff++; merged += '-';
+                        } else {
+                            valid = false; break;
+                        }
+                    }
+                    if (valid && diff === 1) {
+                        changed = true;
+                        pa.combined = pb.combined = true;
+                        const ones = merged.split('').filter(b => b === '1').length;
+                        const existing = next[ones] || (next[ones] = []);
+                        if (!existing.some(x => x.bits === merged))
+                            existing.push({bits: merged, minterms: [...new Set([...pa.minterms,...pb.minterms])], combined:false});
+                    }
+                }
+            }
+        }
+        Object.keys(groups).forEach(k => {
+            (groups[k]||[]).filter(p => !p.combined).forEach(p => {
+                if (!primes.some(q => q.bits === p.bits)) primes.push(p);
+            });
+        });
+        groups = next;
+    }
+    primes = primes.filter((v,i,a) => a.findIndex(x => x.bits === v.bits) === i);
+
+    const chart = {};
+    minterms.forEach(m => { chart[m] = []; });
+    primes.forEach((p, idx) => { p.minterms.forEach(m => { if (m in chart) chart[m].push(idx); }); });
+
+    const essentialIdx = new Set();
+    Object.entries(chart).forEach(([m, arr]) => { if (arr.length === 1) essentialIdx.add(arr[0]); });
+
+    const covered = new Set();
+    const finalSet = new Set(essentialIdx);
+    essentialIdx.forEach(idx => primes[idx].minterms.forEach(m => { if (m in chart) covered.add(+m); }));
+
+    let remaining = new Set(minterms.filter(m => !covered.has(m)));
+    while (remaining.size > 0) {
+        let bestIdx = -1, bestScore = -1;
+        primes.forEach((p, idx) => {
+            const count = p.minterms.filter(m => remaining.has(m)).length;
+            const dashes = p.bits.split('').filter(b => b === '-').length;
+            const score = count * 100 + dashes;
+            if (score > bestScore) { bestScore = score; bestIdx = idx; }
+        });
+        if (bestIdx === -1) break;
+        finalSet.add(bestIdx);
+        primes[bestIdx].minterms.forEach(m => remaining.delete(m));
+    }
+
+    const implicantToExpr = bits => {
+        const parts = [];
+        for (let i = 0; i < bits.length; i++) {
+            if (bits[i] === '-') continue;
+            parts.push(bits[i] === '1' ? vars[i] : vars[i] + "'");
+        }
+        return parts.join('*');
+    };
+
+    const expr = Array.from(finalSet).map(i => implicantToExpr(primes[i].bits)).filter(Boolean).join(' + ') || '0';
+    const displayExpr = expr.replace(/\*/g, '');
+    return {expr, displayExpr};
 }
 
-function simplifyExpression() { const truth = generateTruthTable(); if (!truth) return; const { minterms, vars } = truth; const { expr, steps } = qmSimplify(minterms, vars.length); document.getElementById('simplified').innerHTML = `<div><strong>Simplified (SOP):</strong> Z = ${expr || '0'}</div><pre>${steps.join('\n')}</pre>`; return expr; }
+// Compute POS by simplifying the complement (maxterms) then converting via DeMorgan
+function posSimplify(minterms, varCount, variableNames) {
+    const all = 1 << varCount;
+    const mintermSet = new Set(minterms);
+    const maxterms = Array.from({length: all}, (_, i) => i).filter(i => !mintermSet.has(i));
+    if (maxterms.length === 0) return {expr:'1', displayExpr:'1', tree:null, litCount:0};
+    if (minterms.length === 0) return {expr:'0', displayExpr:'0', tree:null, litCount:0};
+    const vars = variableNames && variableNames.length ? variableNames : ['A','B','C','D'].slice(0, varCount);
+
+    const comp = qmSimplify(maxterms, varCount, vars);
+    if (comp.expr === '0') return {expr:'1', displayExpr:'1', tree:null, litCount:0};
+    if (comp.expr === '1') return {expr:'0', displayExpr:'0', tree:null, litCount:0};
+
+    // Each SOP term of F' → a sum (OR) factor of F: complement every literal, then OR them
+    const sopTerms = comp.expr.split(' + ');
+    const factorTrees = sopTerms.map(term => {
+        const lits = term.split('*').map(lit => {
+            if (lit.endsWith("'")) return {type:'VAR', value: lit.slice(0,-1)};
+            return {type:'NOT', children:[{type:'VAR', value: lit}]};
+        });
+        if (lits.length === 1) return lits[0];
+        let node = {type:'OR', children:[lits[0], lits[1]]};
+        for (let i = 2; i < lits.length; i++) node = {type:'OR', children:[node, lits[i]]};
+        return node;
+    });
+
+    let tree = factorTrees[0];
+    for (let i = 1; i < factorTrees.length; i++) tree = {type:'AND', children:[tree, factorTrees[i]]};
+
+    const factorStrings = sopTerms.map(term => {
+        const lits = term.split('*').map(lit => lit.endsWith("'") ? lit.slice(0,-1) : lit+"'");
+        return lits.length === 1 ? lits[0] : '(' + lits.join('+') + ')';
+    });
+    const expr = factorStrings.join('*');
+    const displayExpr = factorStrings.join('·');
+    const litCount = (comp.expr.match(/[A-Z]/g) || []).length;
+    return {expr, displayExpr, tree, litCount};
+}
+
+function literalCount(expr) {
+    return (expr === '0' || expr === '1') ? 0 : (expr.match(/[A-Z]/g) || []).length;
+}
+
+function canonicalSopFromMinterms(minterms, vars) {
+    if (!minterms || minterms.length === 0) return '0';
+    const all = 1 << vars.length;
+    if (minterms.length === all) return '1';
+    return minterms.map(index => {
+        const bits = index.toString(2).padStart(vars.length, '0');
+        return bits.split('').map((bit, idx) => bit === '1' ? vars[idx] : `${vars[idx]}'`).join('*');
+    }).join(' + ');
+}
+
+function canonicalPosFromMaxterms(maxterms, vars) {
+    if (!maxterms || maxterms.length === 0) return '1';
+    const all = 1 << vars.length;
+    if (maxterms.length === all) return '0';
+    return maxterms.map(index => {
+        const bits = index.toString(2).padStart(vars.length, '0');
+        const factor = bits.split('').map((bit, idx) => bit === '0' ? vars[idx] : `${vars[idx]}'`).join('+');
+        return `(${factor})`;
+    }).join('*');
+}
+
+function renderFormulaForSteps(expr) {
+    if (expr === '0' || expr === '1') return expr;
+    return expressionTextToFormulaHtml(expr);
+}
+
+function buildStepLine(title, detailHtml, lawName, formulaExpr) {
+    const formulaHtml = formulaExpr ? `<div class="step-formula bool-formula">Z = ${renderFormulaForSteps(formulaExpr)}</div>` : '';
+    return `
+        <div class="step-line">
+            <div class="step-copy">
+                <strong>${title}</strong>
+                <div>${detailHtml}</div>
+                ${formulaHtml}
+            </div>
+            <div class="step-law">(${lawName})</div>
+        </div>
+    `;
+}
+
+function buildMethodWalkthrough(title, canonicalExpr, simplifiedExpr, description, lawName, canonicalLaw, isBetter) {
+    const canonicalMatches = canonicalExpr === simplifiedExpr;
+    return `
+        <section class="method-panel">
+            <h4>${title}${isBetter ? ' - easier here' : ''}</h4>
+            ${buildStepLine(
+                `Build the canonical ${title}`,
+                description,
+                canonicalLaw,
+                canonicalExpr
+            )}
+            ${buildStepLine(
+                `Simplify the ${title} expression`,
+                canonicalMatches
+                    ? `This ${title} form is already minimal, so no extra reduction is needed.`
+                    : `Combine terms that differ in one literal and remove the changing literal until no more reduction is possible.`,
+                lawName,
+                simplifiedExpr
+            )}
+            ${buildStepLine(
+                `Final ${title} result`,
+                canonicalMatches
+                    ? `The canonical ${title} and simplified ${title} are the same.`
+                    : `This is the simplified ${title} form after applying the law above.`,
+                'Minimal form',
+                simplifiedExpr
+            )}
+        </section>
+    `;
+}
+
+function renderSimplificationSteps(minterms, vars, sop, pos, usePOS) {
+    const all = 1 << vars.length;
+    const mintermSet = new Set(minterms);
+    const maxterms = Array.from({ length: all }, (_, index) => index).filter(index => !mintermSet.has(index));
+    const chosenType = usePOS ? 'POS' : 'SOP';
+    const chosenExpr = usePOS ? pos.expr : sop.expr;
+    const canonicalSop = canonicalSopFromMinterms(minterms, vars);
+    const canonicalPos = canonicalPosFromMaxterms(maxterms, vars);
+    const sopCount = literalCount(sop.expr);
+    const posCount = literalCount(pos.expr);
+    const lines = [];
+
+    if (chosenExpr === '0') {
+        lines.push(buildStepLine(
+            'Read the truth table',
+            `Every row gives output 0, so there are no minterms.`,
+            'Zero function'
+        ));
+        lines.push(buildStepLine(
+            'Final result',
+            'No product or sum terms are needed.',
+            'Domination law',
+            '0'
+        ));
+        return `<div class="walkthrough">${lines.join('')}</div>`;
+    }
+
+    if (chosenExpr === '1') {
+        lines.push(buildStepLine(
+            'Read the truth table',
+            `Every row gives output 1, so the function is always true.`,
+            'Unit function'
+        ));
+        lines.push(buildStepLine(
+            'Final result',
+            'No simplification is needed because the output is always 1.',
+            'Identity law',
+            '1'
+        ));
+        return `<div class="walkthrough">${lines.join('')}</div>`;
+    }
+
+    lines.push(`
+        <div class="walkthrough-summary">
+            <div class="step-copy">
+                <strong>Truth-table decision</strong>
+                <div class="step-meta">1-rows: m(${minterms.join(', ') || '-'})</div>
+                <div class="step-meta">0-rows: M(${maxterms.join(', ') || '-'})</div>
+                <div class="step-meta">Easier form selected from the truth table: <strong>${chosenType}</strong>. SOP literals = ${sopCount}, POS literals = ${posCount}.</div>
+            </div>
+        </div>
+    `);
+
+    lines.push(`
+        <div class="walkthrough-split">
+            ${buildMethodWalkthrough(
+                'POS',
+                canonicalPos,
+                pos.expr,
+                'Take every row where Z = 0 and convert it to a sum factor, then multiply the factors.',
+                `Combining law: (X + Y)(X + Y') = X`,
+                'Canonical maxterm form',
+                usePOS
+            )}
+            ${buildMethodWalkthrough(
+                'SOP',
+                canonicalSop,
+                sop.expr,
+                'Take every row where Z = 1 and convert it to a product term, then add the terms.',
+                `Combining law: XY + XY' = X`,
+                'Canonical minterm form',
+                !usePOS
+            )}
+        </div>
+    `);
+
+    return `<div class="walkthrough">${lines.join('')}</div>`;
+}
+
+function simplifyExpression() {
+    const mode = getLogicMode();
+    const truth = generateTruthTable();
+    if (!truth) return;
+    const { minterms, vars } = truth;
+
+    const sop = qmSimplify(minterms, vars.length, vars);
+    const pos = posSimplify(minterms, vars.length, vars);
+
+    const usePOS = pos.litCount < literalCount(sop.expr) && pos.expr !== '0' && pos.expr !== '1';
+
+    const chosenExpr    = usePOS ? pos.expr       : sop.expr;
+    const chosenDisplay = usePOS ? pos.displayExpr : sop.displayExpr;
+    const formLabel     = usePOS ? 'Simplified (POS)' : 'Simplified (SOP)';
+    const chosenHtml    = usePOS
+        ? (pos.tree ? treeToFormulaHtml(pos.tree) : (pos.expr === '0' || pos.expr === '1' ? pos.expr : expressionTextToFormulaHtml(pos.expr)))
+        : ((sop.expr === '0' || sop.expr === '1') ? sop.expr : expressionTextToFormulaHtml(sop.expr));
+
+    const stepsEl = document.getElementById('simplify-steps');
+    if (stepsEl) stepsEl.innerHTML = renderSimplificationSteps(minterms, vars, sop, pos, usePOS);
+
+    // Keep SOP as diagram base — more reliable for NAND/NOR conversion
+    lastSimplifiedExpr = sop.expr;
+    lastSimplifiedDisplayExpr = sop.displayExpr;
+    lastPreferredGateTree = null;
+    lastPreferredGateMode = null;
+
+    if (mode === 'nand' || mode === 'nor') {
+        // Build both SOP-based and POS-based implementations, then keep the smaller gate network.
+        const sopBaseTree = parseExpressionTreeFromText(sop.expr);
+        const posBaseTree = pos.tree || parseExpressionTreeFromText(pos.expr);
+        const sopGateTree = sopBaseTree
+            ? optimizeGateNetwork(mode === 'nand' ? toNandOnlyTree(sopBaseTree) : toNorOnlyTree(sopBaseTree))
+            : null;
+        const posGateTree = posBaseTree
+            ? optimizeGateNetwork(mode === 'nand' ? toNandOnlyTree(posBaseTree) : toNorOnlyTree(posBaseTree))
+            : null;
+        const sopCount = sopGateTree ? countGateNodes(sopGateTree) : Number.MAX_SAFE_INTEGER;
+        const posCount = posGateTree ? countGateNodes(posGateTree) : Number.MAX_SAFE_INTEGER;
+        const preferred = posCount < sopCount ? posGateTree : sopGateTree;
+        if (preferred) {
+            lastPreferredGateTree = cloneTree(preferred);
+            lastPreferredGateMode = mode;
+        }
+
+        const implementationTree = buildImplementationTree(mode);
+        if (!implementationTree) {
+            document.getElementById('simplified').innerHTML =
+                `<div class="bool-formula"><strong>${formLabel}:</strong> Z = ${chosenHtml}</div>`;
+            drawDiagram(true);
+            return chosenDisplay;
+        }
+        const gateExpr = treeToGateExpression(implementationTree);
+        const gateExprInfix = treeToInfixGateExpression(implementationTree);
+        const gateDisplayHtml = treeToFormulaHtml(implementationTree);
+        const gateCount = countGateNodes(implementationTree);
+        const gateType = mode.toUpperCase();
+        document.getElementById('simplified').innerHTML =
+            `<div class="bool-formula"><strong>${gateType}-Only Form:</strong> Z = ${gateDisplayHtml}</div>` +
+            `<div class="muted" style="margin-top:0.35rem;font-size:0.88rem;"><strong>${gateType} expression:</strong> ${gateExprInfix}</div>` +
+            `<div class="bool-formula" style="margin-top:0.45rem;"><strong>${formLabel}:</strong> Z = ${chosenHtml}</div>` +
+            `<div class="muted" style="margin-top:0.35rem;font-size:0.88rem;">${gateType} gate count: ${gateCount}</div>`;
+        drawDiagram(true);
+        return gateExpr;
+    }
+
+    document.getElementById('simplified').innerHTML =
+        `<div class="bool-formula"><strong>${formLabel}:</strong> Z = ${chosenHtml}</div>`;
+    drawDiagram(true);
+    return chosenDisplay;
+}
 
 function toPostfix(expr) { const tokens = tokenize(expr.toUpperCase().replace(/·/g,'*')); const out=[]; const ops=[]; const prec = {"!":3, "'":3, "*":2, "+":1}; for (let i=0;i<tokens.length;i++) { let t=tokens[i]; if (t==="'") { out.push('!'); continue; } if (/^[A-Z]$/.test(t)) out.push(t); else if (t==='!') { while (ops.length && prec[ops.at(-1)]>prec['!']) out.push(ops.pop()); ops.push('!'); } else if (t==='+' || t==='*') { while (ops.length && prec[ops.at(-1)]>=prec[t]) out.push(ops.pop()); ops.push(t); } else if (t==='(') ops.push(t); else if (t===')') { while (ops.length && ops.at(-1)!=='(') out.push(ops.pop()); ops.pop(); } } while (ops.length) out.push(ops.pop()); return out; }
 function postfixToTree(post) { const stack=[]; for (const t of post) { if (t==='!' ) { const a=stack.pop(); stack.push({type:'NOT', children:[a]}); } else if (t==='+' || t==='*') { const b=stack.pop(), a=stack.pop(); stack.push({type: t==='+'?'OR':'AND', children:[a,b]}); } else stack.push({type:'VAR', value:t}); } return stack.pop(); }
-function renderTree(node) { if (!node) return ''; if (node.type==='VAR') return `<div class="gate">${node.value}</div>`; if (node.type==='NOT') return `<div class="gate">NOT</div><div style="margin-left:12px;">${renderTree(node.children[0])}</div>`; return `<div class="gate">${node.type}</div><div style="display:flex; gap:12px; margin-left:12px;">${node.children.map(renderTree).join('')}</div>`; }
-function drawDiagram() { try { const expr = document.getElementById('expr').value; const post = toPostfix(expr); const tree = postfixToTree(post); document.getElementById('diagram').innerHTML = `<div class="diagram">${renderTree(tree)}</div>`; } catch (e) { document.getElementById('diagram').innerHTML = `<span style="color:#f87171;">${e.message}</span>`; } }
+function convertToNamedGates(node) {
+    if (!node) return node;
+    if (node.type === 'VAR') return node;
+    const convertedChildren = (node.children || []).map(convertToNamedGates);
+    if (node.type === 'NOT' && convertedChildren[0]) {
+        const child = convertedChildren[0];
+        if (child.type === 'AND') return { type: 'NAND', children: child.children };
+        if (child.type === 'OR') return { type: 'NOR', children: child.children };
+        return { type: 'NOT', children: convertedChildren };
+    }
+    return { ...node, children: convertedChildren };
+}
 
-function showKmap() { const truth = generateTruthTable(); if (!truth) return; const { minterms, vars } = truth; const n = vars.length; if (n<2 || n>4) { document.getElementById('kmap').innerHTML = 'K-map supported for 2-4 variables.'; return; } const gray = n===2? ['00','01','11','10'] : ['00','01','11','10']; const rows = n===4 ? ['00','01','11','10'] : (n===3? ['0','1']: ['']); let html = '<div class="kmap" style="grid-template-columns: repeat(' + (gray.length+1) + ', 1fr);">'; html += '<div></div>' + gray.map(g=>`<div class="kcell">${g}</div>`).join(''); for (const r of rows) { html += `<div class="kcell">${r}</div>`; for (const c of gray) { const bits = (r + c).padStart(n,'0'); const idx = parseInt(bits,2); const on = minterms.includes(idx); html += `<div class="kcell ${on?'on':''}">${on?1:0}</div>`; } } html += '</div>'; document.getElementById('kmap').innerHTML = html; }
+function treeDepth(node) {
+    if (!node || !node.children || node.children.length === 0) return 0;
+    return 1 + Math.max(...node.children.map(treeDepth));
+}
+
+function layoutTree(node, depth, state) {
+    node.depth = depth;
+    if (node.type === 'VAR' || !node.children || node.children.length === 0) {
+        node.y = state.nextY;
+        state.nextY += 95;
+        return;
+    }
+    node.children.forEach(child => layoutTree(child, depth + 1, state));
+    const ys = node.children.map(c => c.y);
+    node.y = ys.reduce((a, b) => a + b, 0) / ys.length;
+}
+
+function gateSpec(type) {
+    if (type === 'VAR') {
+        return { inputX: -16, outputX: 22, inputOffsets: [] };
+    }
+    if (type === 'NOT') {
+        return { inputX: -40, outputX: 22, inputOffsets: [0] };
+    }
+    if (type === 'AND' || type === 'OR') {
+        return { inputX: -42, outputX: 22, inputOffsets: [-12, 12] };
+    }
+    if (type === 'NAND' || type === 'NOR') {
+        return { inputX: -42, outputX: 34, inputOffsets: [-12, 12] };
+    }
+    return { inputX: -40, outputX: 20, inputOffsets: [0] };
+}
+
+function renderGateShape(node) {
+    if (node.type === 'VAR') {
+        return `<rect class="gate-shape" x="-16" y="-14" width="32" height="28" rx="8"></rect><rect class="label-bg" x="-12" y="-10" width="24" height="20" rx="4"></rect><text class="var-label" x="0" y="5">${node.value}</text>`;
+    }
+    if (node.type === 'NOT') {
+        return `
+            <path class="gate-shape" d="M -40 -24 L 6 0 L -40 24 Z"></path>
+            <circle class="gate-shape" cx="14" cy="0" r="7"></circle>
+            <rect class="label-bg" x="-28" y="-8" width="20" height="16" rx="4"></rect>
+            <text class="gate-label" x="-18" y="5">NOT</text>
+        `;
+    }
+    if (node.type === 'AND' || node.type === 'NAND') {
+        return `
+            <path class="gate-shape" d="M -42 -28 L -6 -28 A 28 28 0 0 1 -6 28 L -42 28 Z"></path>
+            ${node.type === 'NAND' ? '<circle class="gate-shape" cx="24" cy="0" r="7"></circle>' : ''}
+            <rect class="label-bg" x="-32" y="-8" width="18" height="16" rx="4"></rect>
+            <text class="gate-label" x="-23" y="5">${node.type}</text>
+        `;
+    }
+    if (node.type === 'OR' || node.type === 'NOR') {
+        return `
+            <path class="gate-shape" d="M -44 -28 Q -10 -28 10 0 Q -10 28 -44 28 Q -28 0 -44 -28 Z"></path>
+            ${node.type === 'NOR' ? '<circle class="gate-shape" cx="24" cy="0" r="7"></circle>' : ''}
+            <rect class="label-bg" x="-31" y="-8" width="18" height="16" rx="4"></rect>
+            <text class="gate-label" x="-22" y="5">${node.type}</text>
+        `;
+    }
+    return `<rect class="gate-shape" x="-30" y="-20" width="60" height="40" rx="10"></rect><rect class="label-bg" x="-25" y="-10" width="50" height="20" rx="4"></rect><text class="gate-label" x="0" y="5">${node.type}</text>`;
+}
+
+function drawConnection(child, parent, inputIndex) {
+    const childSpec = gateSpec(child.type);
+    const parentSpec = gateSpec(parent.type);
+    const x1 = child.x + childSpec.outputX;
+    const y1 = child.y;
+    const x2 = parent.x + parentSpec.inputX;
+    const y2 = parent.y + (parentSpec.inputOffsets[inputIndex] || 0);
+    const mid = x1 + (x2 - x1) * 0.52;
+    return `<path class="logic-wire" d="M ${x1} ${y1} H ${mid} V ${y2} H ${x2}"></path>`;
+}
+
+function flattenNodes(node, list = []) {
+    list.push(node);
+    (node.children || []).forEach(c => flattenNodes(c, list));
+    return list;
+}
+
+function legendGate(type) {
+    const sample = { type, children: type === 'NOT' ? [{ type: 'VAR', value: 'A' }] : [{ type: 'VAR', value: 'A' }, { type: 'VAR', value: 'B' }] };
+    return `<span class="legend-chip"><svg viewBox="-50 -35 110 70">${renderGateShape(sample)}</svg>${type}</span>`;
+}
+
+function drawDiagram(useSimplified = false) {
+    try {
+        const mode = getLogicMode();
+        let tree;
+        if (mode === 'expr' && useSimplified) {
+            tree = convertToNamedGates(parseSimplifiedExpressionTree());
+        } else {
+            tree = buildImplementationTree(mode);
+        }
+
+        if (!tree) {
+            const label = useSimplified && lastSimplifiedDisplayExpr ? `Simplified result is Z = ${lastSimplifiedDisplayExpr}.` : 'Unable to build diagram.';
+            document.getElementById('diagram').innerHTML = `<span class="muted">${label}</span>`;
+            return;
+        }
+
+        const maxDepth = treeDepth(tree);
+        const state = { nextY: 72 };
+        layoutTree(tree, 0, state);
+
+        const nodes = flattenNodes(tree);
+        const width = 260 + (maxDepth + 1) * 220;
+        const height = Math.max(220, state.nextY + 42);
+
+        nodes.forEach(node => {
+            node.x = 90 + (maxDepth - node.depth) * 220;
+        });
+
+        const wires = [];
+        nodes.forEach(parent => {
+            (parent.children || []).forEach((child, idx) => {
+                wires.push(drawConnection(child, parent, idx));
+            });
+        });
+
+        const gates = nodes.map(node => `<g transform="translate(${node.x}, ${node.y})">${renderGateShape(node)}</g>`).join('');
+        const rootSpec = gateSpec(tree.type);
+        const outStart = tree.x + rootSpec.outputX;
+        const outEnd = outStart + 72;
+        const outputWire = `<path class="logic-wire-strong" d="M ${outStart} ${tree.y} H ${outEnd}"></path><text class="gate-label" x="${outEnd + 16}" y="${tree.y + 4}">Z</text>`;
+
+        document.getElementById('diagram').innerHTML = `
+            <div class="diagram">
+                <div class="muted" style="margin-bottom:0.45rem;">${useSimplified && lastSimplifiedDisplayExpr ? `Diagram from simplified SOP: Z = ${lastSimplifiedDisplayExpr}` : 'Diagram from typed expression'}</div>
+                <div class="gate-legend">${(mode === 'nand' ? ['NAND'] : mode === 'nor' ? ['NOR'] : ['AND', 'OR', 'NOT', 'NAND', 'NOR']).map(legendGate).join('')}</div>
+                <div class="diagram-wrap">
+                    <div class="diagram-viewport" id="diagram-viewport" onwheel="handleDiagramWheel(event)" onmousedown="startDiagramPan(event)" onmousemove="moveDiagramPan(event)" onmouseup="endDiagramPan()" onmouseleave="endDiagramPan()">
+                        <div class="zoom-surface" id="logic-svg-root">
+                            <svg class="logic-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Logic gate diagram">
+                                ${wires.join('')}
+                                ${outputWire}
+                                ${gates}
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        diagramAutoFitWidth = width;
+        diagramAutoFitHeight = height;
+        requestAnimationFrame(() => fitDiagramToViewport());
+    } catch (e) {
+        document.getElementById('diagram').innerHTML = `<span style="color:#f87171;">${e.message}</span>`;
+    }
+}
+
+function showKmap() {
+    const truth = generateTruthTable();
+    if (!truth) return;
+
+    const { minterms, vars } = truth;
+    const n = vars.length;
+    if (n < 2 || n > 4) {
+        document.getElementById('kmap').innerHTML = 'K-map supported for 2-4 variables.';
+        return;
+    }
+
+    const gray2 = ['00', '01', '11', '10'];
+    let rowCodes, colCodes, rowVars, colVars;
+
+    if (n === 2) {
+        rowCodes = ['0', '1'];
+        colCodes = ['0', '1'];
+        rowVars = vars[0];
+        colVars = vars[1];
+    } else if (n === 3) {
+        rowCodes = ['0', '1'];
+        colCodes = gray2;
+        rowVars = vars[0];
+        colVars = vars.slice(1).join('');
+    } else {
+        rowCodes = gray2;
+        colCodes = gray2;
+        rowVars = vars.slice(0, 2).join('');
+        colVars = vars.slice(2).join('');
+    }
+
+    let html = `<div class="kmap" style="grid-template-columns: repeat(${colCodes.length + 1}, minmax(45px, 1fr)); grid-auto-rows: minmax(45px, auto);">`;
+    html += `<div class="kcorner"><span class="krowvars">${rowVars}</span><span class="kcolvars">${colVars}</span></div>`;
+    html += colCodes.map(code => `<div class="khdr">${code}</div>`).join('');
+
+    for (const r of rowCodes) {
+        html += `<div class="khdr">${r}</div>`;
+        for (const c of colCodes) {
+            const bits = (r + c).padStart(n, '0');
+            const idx = parseInt(bits, 2);
+            const on = minterms.includes(idx);
+            html += `<div class="kcell ${on ? 'on' : ''}">${on ? 1 : 0}</div>`;
+        }
+    }
+
+    html += '</div>';
+    document.getElementById('kmap').innerHTML = html;
+}
 
 function randomExpr() { const vars=['A','B','C']; const pick=()=>vars[Math.floor(Math.random()*vars.length)]; const ops=['+','*']; const maybeNot=v=> Math.random()<0.4? `${v}'`: v; const term=()=> maybeNot(pick()); const expr=`(${term()} ${ops[Math.floor(Math.random()*2)]} ${term()}) + ${maybeNot(pick())}`; return expr; }
 function newQuiz() { const expr=randomExpr(); document.getElementById('quiz-expression').textContent=expr; document.getElementById('quiz-result').textContent=''; document.getElementById('quiz-answer').value=''; }
